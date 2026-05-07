@@ -1,0 +1,1373 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.4">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; -webkit-text-stroke: #000000}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; -webkit-text-stroke: #000000; min-height: 14.0px}
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Hiragino Sans'; -webkit-text-stroke: #000000}
+    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica; color: #000000; -webkit-text-stroke: #000000}
+    span.s1 {font-kerning: none}
+    span.s2 {font: 12.0px 'Apple Color Emoji'; font-kerning: none}
+    span.s3 {font: 12.0px Helvetica; font-kerning: none}
+    span.s4 {font: 12.0px Helvetica; font-kerning: none; color: #000000}
+    span.s5 {font: 12.0px Menlo; font-kerning: none}
+    span.s6 {font: 12.0px 'Lucida Grande'; font-kerning: none}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
+<p class="p1"><span class="s1">&lt;html lang="en"&gt;</span></p>
+<p class="p1"><span class="s1">&lt;head&gt;</span></p>
+<p class="p1"><span class="s1">&lt;meta charset="UTF-8"&gt;</span></p>
+<p class="p1"><span class="s1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"&gt;</span></p>
+<p class="p1"><span class="s1">&lt;meta name="theme-color" content="#0d0d0d"&gt;</span></p>
+<p class="p1"><span class="s1">&lt;meta name="apple-mobile-web-app-capable" content="yes"&gt;</span></p>
+<p class="p1"><span class="s1">&lt;meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"&gt;</span></p>
+<p class="p1"><span class="s1">&lt;meta name="apple-mobile-web-app-title" content="Formd"&gt;</span></p>
+<p class="p1"><span class="s1">&lt;title&gt;Formd — AI Gym Tracker&lt;/title&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">&lt;!-- PWA Manifest inline --&gt;</span></p>
+<p class="p1"><span class="s1">&lt;script&gt;</span></p>
+<p class="p1"><span class="s1">const manifestData = {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>name: "Formd — AI Gym Tracker",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>short_name: "Formd",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>description: "Track workouts, log progress, get AI plans",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>start_url: "/",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>display: "standalone",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>background_color: "#0d0d0d",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>theme_color: "#e63946",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>orientation: "portrait",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>icons: [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>{ src: "data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'&gt;&lt;rect width='512' height='512' fill='%230d0d0d'/&gt;&lt;text x='256' y='360' font-size='320' font-family='Arial' font-weight='bold' fill='%23e63946' text-anchor='middle'&gt;F&lt;/text&gt;&lt;/svg&gt;", sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>]</span></p>
+<p class="p1"><span class="s1">};</span></p>
+<p class="p1"><span class="s1">const blob = new Blob([JSON.stringify(manifestData)], {type:'application/json'});</span></p>
+<p class="p1"><span class="s1">const manifestURL = URL.createObjectURL(blob);</span></p>
+<p class="p1"><span class="s1">document.write('&lt;link rel="manifest" href="' + manifestURL + '"&gt;');</span></p>
+<p class="p1"><span class="s1">&lt;/script&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">&lt;style&gt;</span></p>
+<p class="p1"><span class="s1">/* ── Reset &amp; Base ─────────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}</span></p>
+<p class="p1"><span class="s1">:root{</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>--bg:#0d0d0d;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>--surface:#161616;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>--card:#1c1c1c;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>--card2:#222222;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>--border:#2c2c2c;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>--red:#e63946;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>--red-dim:rgba(230,57,70,0.15);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>--teal:#00b4d8;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>--teal-dim:rgba(0,180,216,0.12);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>--gold:#d4a843;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>--green:#2a9d8f;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>--orange:#f4a261;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>--text:#f0ede8;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>--soft:#aaa;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>--muted:#666;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>--radius:12px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>--radius-sm:8px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>--safe-bottom:env(safe-area-inset-bottom,0px);</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p1"><span class="s1">html{height:100%;background:var(--bg);}</span></p>
+<p class="p1"><span class="s1">body{</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>height:100%;overflow:hidden;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>-webkit-font-smoothing:antialiased;</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── Layout ───────────────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">#app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:480px;margin:0 auto;position:relative;}</span></p>
+<p class="p1"><span class="s1">.screen{display:none;flex:1;flex-direction:column;overflow:hidden;}</span></p>
+<p class="p1"><span class="s1">.screen.active{display:flex;}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── Auth Screen ──────────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">#auth-screen{justify-content:center;align-items:center;padding:24px;background:var(--bg);}</span></p>
+<p class="p1"><span class="s1">.auth-logo{text-align:center;margin-bottom:40px;}</span></p>
+<p class="p1"><span class="s1">.auth-logo h1{font-size:52px;font-weight:800;letter-spacing:-2px;color:var(--red);}</span></p>
+<p class="p1"><span class="s1">.auth-logo p{color:var(--muted);font-size:14px;letter-spacing:1px;text-transform:uppercase;margin-top:4px;}</span></p>
+<p class="p1"><span class="s1">.auth-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 24px;width:100%;max-width:360px;}</span></p>
+<p class="p1"><span class="s1">.auth-tabs{display:flex;gap:4px;margin-bottom:24px;background:var(--surface);border-radius:var(--radius-sm);padding:4px;}</span></p>
+<p class="p1"><span class="s1">.auth-tab{flex:1;padding:8px;border:none;background:none;color:var(--muted);font-size:14px;font-weight:600;border-radius:6px;cursor:pointer;transition:all .2s;}</span></p>
+<p class="p1"><span class="s1">.auth-tab.active{background:var(--red);color:#fff;}</span></p>
+<p class="p1"><span class="s1">.auth-form{display:flex;flex-direction:column;gap:14px;}</span></p>
+<p class="p1"><span class="s1">.auth-form input{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:15px;padding:12px 14px;outline:none;width:100%;transition:border-color .2s;}</span></p>
+<p class="p1"><span class="s1">.auth-form input:focus{border-color:var(--red);}</span></p>
+<p class="p1"><span class="s1">.auth-form input::placeholder{color:var(--muted);}</span></p>
+<p class="p1"><span class="s1">.btn-auth{background:var(--red);color:#fff;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:700;padding:13px;cursor:pointer;width:100%;transition:opacity .2s;}</span></p>
+<p class="p1"><span class="s1">.btn-auth:active{opacity:.8;}</span></p>
+<p class="p1"><span class="s1">.auth-msg{font-size:13px;text-align:center;min-height:18px;}</span></p>
+<p class="p1"><span class="s1">.auth-msg.error{color:var(--red);}</span></p>
+<p class="p1"><span class="s1">.auth-msg.success{color:var(--green);}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── Top Bar ──────────────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 8px;padding-top:calc(12px + env(safe-area-inset-top,0px));flex-shrink:0;background:var(--surface);border-bottom:1px solid var(--border);}</span></p>
+<p class="p1"><span class="s1">.topbar-title{font-size:20px;font-weight:800;letter-spacing:-0.5px;}</span></p>
+<p class="p1"><span class="s1">.topbar-title span{color:var(--red);}</span></p>
+<p class="p1"><span class="s1">.topbar-right{display:flex;align-items:center;gap:10px;}</span></p>
+<p class="p1"><span class="s1">.btn-icon{background:none;border:none;color:var(--soft);cursor:pointer;padding:6px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;transition:color .2s;}</span></p>
+<p class="p1"><span class="s1">.btn-icon:active{color:var(--red);}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── Bottom Nav ───────────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">.bottom-nav{display:flex;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;padding-bottom:var(--safe-bottom);}</span></p>
+<p class="p1"><span class="s1">.nav-btn{flex:1;border:none;background:none;color:var(--muted);padding:10px 4px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .2s;position:relative;}</span></p>
+<p class="p1"><span class="s1">.nav-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}</span></p>
+<p class="p1"><span class="s1">.nav-btn span{font-size:10px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;}</span></p>
+<p class="p1"><span class="s1">.nav-btn.active{color:var(--red);}</span></p>
+<p class="p1"><span class="s1">.nav-btn.active::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:24px;height:2px;background:var(--red);border-radius:1px;}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── Page Content ─────────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">.page{display:none;flex:1;overflow-y:auto;overflow-x:hidden;padding:14px 14px calc(14px + var(--safe-bottom));flex-direction:column;gap:14px;-webkit-overflow-scrolling:touch;}</span></p>
+<p class="p1"><span class="s1">.page.active{display:flex;}</span></p>
+<p class="p1"><span class="s1">.page::-webkit-scrollbar{display:none;}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── Cards ────────────────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;}</span></p>
+<p class="p1"><span class="s1">.card-title{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}</span></p>
+<p class="p1"><span class="s1">.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}</span></p>
+<p class="p1"><span class="s1">.card-header h3{font-size:15px;font-weight:700;color:var(--text);}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── Inputs ───────────────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">input,select,textarea{</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>color:var(--text);font-size:14px;padding:10px 12px;outline:none;width:100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>font-family:inherit;transition:border-color .2s;-webkit-appearance:none;appearance:none;</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p1"><span class="s1">input:focus,select:focus,textarea:focus{border-color:var(--red);}</span></p>
+<p class="p1"><span class="s1">input::placeholder,textarea::placeholder{color:var(--muted);}</span></p>
+<p class="p1"><span class="s1">select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}</span></p>
+<p class="p1"><span class="s1">select option{background:var(--card);}</span></p>
+<p class="p1"><span class="s1">textarea{resize:none;line-height:1.5;}</span></p>
+<p class="p1"><span class="s1">.form-group{display:flex;flex-direction:column;gap:6px;}</span></p>
+<p class="p1"><span class="s1">.form-label{font-size:12px;font-weight:600;color:var(--soft);letter-spacing:.4px;text-transform:uppercase;}</span></p>
+<p class="p1"><span class="s1">.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}</span></p>
+<p class="p1"><span class="s1">.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── Buttons ──────────────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">.btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 16px;border-radius:var(--radius-sm);border:none;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s,transform .1s;font-family:inherit;width:100%;}</span></p>
+<p class="p1"><span class="s1">.btn:active{transform:scale(.97);}</span></p>
+<p class="p1"><span class="s1">.btn-red{background:var(--red);color:#fff;}</span></p>
+<p class="p1"><span class="s1">.btn-teal{background:var(--teal);color:#000;}</span></p>
+<p class="p1"><span class="s1">.btn-outline{background:transparent;border:1px solid var(--border);color:var(--soft);}</span></p>
+<p class="p1"><span class="s1">.btn-sm{padding:7px 12px;font-size:13px;}</span></p>
+<p class="p1"><span class="s1">.btn-ghost{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:4px 8px;border-radius:6px;}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── Badges ───────────────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:700;letter-spacing:.8px;padding:3px 8px;border-radius:5px;text-transform:uppercase;}</span></p>
+<p class="p1"><span class="s1">.badge-red{background:var(--red-dim);color:var(--red);}</span></p>
+<p class="p1"><span class="s1">.badge-teal{background:var(--teal-dim);color:var(--teal);}</span></p>
+<p class="p1"><span class="s1">.badge-gold{background:rgba(212,168,67,.15);color:var(--gold);}</span></p>
+<p class="p1"><span class="s1">.badge-green{background:rgba(42,157,143,.15);color:var(--green);}</span></p>
+<p class="p1"><span class="s1">.badge-orange{background:rgba(244,162,97,.15);color:var(--orange);}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── Toast ────────────────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">#toast{position:fixed;bottom:calc(72px + var(--safe-bottom) + 12px);left:50%;transform:translateX(-50%);background:var(--green);color:#fff;padding:9px 20px;border-radius:24px;font-size:13px;font-weight:700;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}</span></p>
+<p class="p1"><span class="s1">#toast.error-toast{background:var(--red);}</span></p>
+<p class="p1"><span class="s1">#toast.show{opacity:1;}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── Loading ──────────────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;}</span></p>
+<p class="p1"><span class="s1">@keyframes spin{to{transform:rotate(360deg);}}</span></p>
+<p class="p1"><span class="s1">.loading-row{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--muted);gap:10px;font-size:13px;}</span></p>
+<p class="p1"><span class="s1">.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;gap:10px;text-align:center;}</span></p>
+<p class="p1"><span class="s1">.empty-state svg{width:40px;height:40px;opacity:.25;}</span></p>
+<p class="p1"><span class="s1">.empty-state p{color:var(--muted);font-size:14px;}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── LOG WORKOUT ──────────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">.session-meta{display:flex;flex-direction:column;gap:10px;}</span></p>
+<p class="p1"><span class="s1">.ex-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}</span></p>
+<p class="p1"><span class="s1">.ex-item:last-child{border-bottom:none;padding-bottom:0;}</span></p>
+<p class="p1"><span class="s1">.ex-name{font-weight:700;font-size:14px;color:var(--text);}</span></p>
+<p class="p1"><span class="s1">.ex-detail{font-size:12px;color:var(--muted);margin-top:2px;}</span></p>
+<p class="p1"><span class="s1">.ex-weight{font-size:18px;font-weight:800;color:var(--teal);text-align:right;}</span></p>
+<p class="p1"><span class="s1">.ex-unit{font-size:11px;color:var(--muted);}</span></p>
+<p class="p1"><span class="s1">#ex-count-badge{font-size:12px;font-weight:700;color:var(--teal);}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── HISTORY ──────────────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">.session-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:10px;}</span></p>
+<p class="p1"><span class="s1">.session-card-header{padding:14px 14px 12px;display:flex;justify-content:space-between;align-items:flex-start;cursor:pointer;}</span></p>
+<p class="p1"><span class="s1">.session-card-header:active{background:var(--card2);}</span></p>
+<p class="p1"><span class="s1">.session-info h4{font-size:15px;font-weight:800;}</span></p>
+<p class="p1"><span class="s1">.session-info p{font-size:12px;color:var(--muted);margin-top:2px;}</span></p>
+<p class="p1"><span class="s1">.session-chips{display:flex;flex-wrap:wrap;gap:5px;padding:0 14px 12px;}</span></p>
+<p class="p1"><span class="s1">.chip{background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:3px 8px;font-size:11px;color:var(--soft);}</span></p>
+<p class="p1"><span class="s1">.session-detail{padding:0 14px 14px;display:none;}</span></p>
+<p class="p1"><span class="s1">.session-detail.open{display:block;}</span></p>
+<p class="p1"><span class="s1">.session-ex-row{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}</span></p>
+<p class="p1"><span class="s1">.session-ex-row:last-child{border-bottom:none;}</span></p>
+<p class="p1"><span class="s1">.session-ex-row .name{font-weight:600;}</span></p>
+<p class="p1"><span class="s1">.session-ex-row .stats{color:var(--muted);font-size:12px;}</span></p>
+<p class="p1"><span class="s1">.expand-icon{font-size:18px;color:var(--muted);transition:transform .2s;flex-shrink:0;}</span></p>
+<p class="p1"><span class="s1">.expand-icon.open{transform:rotate(180deg);}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── BODY METRICS ─────────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;}</span></p>
+<p class="p1"><span class="s1">.metric-tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;}</span></p>
+<p class="p1"><span class="s1">.metric-tile .val{font-size:24px;font-weight:800;color:var(--teal);line-height:1;}</span></p>
+<p class="p1"><span class="s1">.metric-tile .lbl{font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.8px;}</span></p>
+<p class="p1"><span class="s1">.metric-history-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}</span></p>
+<p class="p1"><span class="s1">.metric-history-item:last-child{border-bottom:none;}</span></p>
+<p class="p1"><span class="s1">.metric-history-item .date{font-size:12px;color:var(--muted);}</span></p>
+<p class="p1"><span class="s1">.metric-history-item .vals{font-size:13px;font-weight:600;color:var(--text);text-align:right;}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── MILESTONES ───────────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">.milestone-item{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--border);}</span></p>
+<p class="p1"><span class="s1">.milestone-item:last-child{border-bottom:none;padding-bottom:0;}</span></p>
+<p class="p1"><span class="s1">.ms-icon{font-size:22px;min-width:30px;text-align:center;}</span></p>
+<p class="p1"><span class="s1">.ms-body{flex:1;}</span></p>
+<p class="p1"><span class="s1">.ms-type{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}</span></p>
+<p class="p1"><span class="s1">.ms-title{font-size:14px;font-weight:700;color:var(--text);}</span></p>
+<p class="p1"><span class="s1">.ms-notes{font-size:12px;color:var(--soft);margin-top:3px;line-height:1.5;}</span></p>
+<p class="p1"><span class="s1">.ms-date{font-size:11px;color:var(--muted);margin-top:4px;}</span></p>
+<p class="p1"><span class="s1">.ms-del{background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;font-size:16px;border-radius:6px;flex-shrink:0;}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── STATS ────────────────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}</span></p>
+<p class="p1"><span class="s1">.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;}</span></p>
+<p class="p1"><span class="s1">.stat-val{font-size:32px;font-weight:800;color:var(--teal);line-height:1;}</span></p>
+<p class="p1"><span class="s1">.stat-lbl{font-size:11px;color:var(--muted);margin-top:6px;text-transform:uppercase;letter-spacing:1px;}</span></p>
+<p class="p1"><span class="s1">.pb-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);}</span></p>
+<p class="p1"><span class="s1">.pb-row:last-child{border-bottom:none;}</span></p>
+<p class="p1"><span class="s1">.pb-name{font-size:13px;font-weight:600;color:var(--text);}</span></p>
+<p class="p1"><span class="s1">.pb-weight{font-size:15px;font-weight:800;color:var(--gold);}</span></p>
+<p class="p1"><span class="s1">.freq-bar-wrap{margin-bottom:10px;}</span></p>
+<p class="p1"><span class="s1">.freq-bar-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;}</span></p>
+<p class="p1"><span class="s1">.freq-bar-label .ex-n{color:var(--soft);}</span></p>
+<p class="p1"><span class="s1">.freq-bar-label .ex-c{color:var(--teal);}</span></p>
+<p class="p1"><span class="s1">.freq-bar-bg{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}</span></p>
+<p class="p1"><span class="s1">.freq-bar-fill{height:5px;background:var(--red);border-radius:3px;transition:width .6s ease;}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── AI PLAN ──────────────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">.goal-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}</span></p>
+<p class="p1"><span class="s1">.goal-chip{padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--soft);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}</span></p>
+<p class="p1"><span class="s1">.goal-chip.selected{background:var(--red);border-color:var(--red);color:#fff;}</span></p>
+<p class="p1"><span class="s1">.ai-output{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;font-size:13px;line-height:1.75;color:var(--soft);max-height:50vh;overflow-y:auto;}</span></p>
+<p class="p1"><span class="s1">.ai-output strong{color:var(--text);}</span></p>
+<p class="p1"><span class="s1">.ai-output h3{color:var(--red);font-size:14px;margin:12px 0 6px;}</span></p>
+<p class="p1"><span class="s1">.ai-output ul{padding-left:16px;margin:4px 0;}</span></p>
+<p class="p1"><span class="s1">.ai-output li{margin-bottom:3px;}</span></p>
+<p class="p1"><span class="s1">.typing-dots{display:inline-flex;gap:5px;align-items:center;padding:8px 0;}</span></p>
+<p class="p1"><span class="s1">.typing-dots span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:dot .9s ease-in-out infinite;}</span></p>
+<p class="p1"><span class="s1">.typing-dots span:nth-child(2){animation-delay:.15s;}</span></p>
+<p class="p1"><span class="s1">.typing-dots span:nth-child(3){animation-delay:.3s;}</span></p>
+<p class="p1"><span class="s1">@keyframes dot{0%,80%,100%{transform:scale(.7);opacity:.5;}40%{transform:scale(1);opacity:1;}}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── Divider ──────────────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">.divider{height:1px;background:var(--border);margin:4px 0;}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── Modal / Overlay ──────────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:none;align-items:flex-end;justify-content:center;}</span></p>
+<p class="p1"><span class="s1">.overlay.show{display:flex;}</span></p>
+<p class="p1"><span class="s1">.modal{background:var(--card);border-radius:20px 20px 0 0;padding:20px 20px calc(20px + var(--safe-bottom));width:100%;max-width:480px;max-height:90vh;overflow-y:auto;animation:slideUp .25s ease;}</span></p>
+<p class="p1"><span class="s1">@keyframes slideUp{from{transform:translateY(40px);opacity:0;}to{transform:translateY(0);opacity:1;}}</span></p>
+<p class="p1"><span class="s1">.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px;}</span></p>
+<p class="p1"><span class="s1">.modal-title{font-size:18px;font-weight:800;margin-bottom:16px;}</span></p>
+<p class="p1"><span class="s1">.modal-form{display:flex;flex-direction:column;gap:12px;}</span></p>
+<p class="p1"><span class="s1">.modal-actions{display:flex;gap:10px;margin-top:6px;}</span></p>
+<p class="p1"><span class="s1">.modal-actions .btn{flex:1;}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">/* ── Responsive fine-tune ─────────────────────────────────── */</span></p>
+<p class="p1"><span class="s1">@media(max-height:640px){</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>.auth-logo{margin-bottom:20px;}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>.auth-logo h1{font-size:40px;}</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p1"><span class="s1">&lt;/style&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/head&gt;</span></p>
+<p class="p1"><span class="s1">&lt;body&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">&lt;div id="app"&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;!-- ── AUTH SCREEN ──────────────────────────────────────── --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;div id="auth-screen" class="screen active"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="auth-logo"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;h1&gt;FORMD&lt;/h1&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;p&gt;AI Gym Tracker&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="auth-card"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="auth-tabs"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;button class="auth-tab active" onclick="switchAuthTab('login')"&gt;Log In&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;button class="auth-tab" onclick="switchAuthTab('signup')"&gt;Sign Up&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="auth-form" id="login-form"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;input type="email" id="login-email" placeholder="Email address" autocomplete="email"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;input type="password" id="login-pw" placeholder="Password" autocomplete="current-password"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;button class="btn-auth" onclick="doLogin()"&gt;Log In&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;p class="auth-msg" id="login-msg"&gt;&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="auth-form" id="signup-form" style="display:none"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;input type="text" id="signup-name" placeholder="Display name (e.g. Alfred)"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;input type="email" id="signup-email" placeholder="Email address" autocomplete="email"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;input type="password" id="signup-pw" placeholder="Password (min 6 chars)" autocomplete="new-password"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;button class="btn-auth" onclick="doSignup()"&gt;Create Account&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;p class="auth-msg" id="signup-msg"&gt;&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;!-- ── MAIN APP ─────────────────────────────────────────── --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;div id="main-screen" class="screen"&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- Top Bar --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="topbar"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="topbar-title"&gt;F&lt;span&gt;O&lt;/span&gt;RMD&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="topbar-right"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;span id="user-label" style="font-size:12px;color:var(--muted);"&gt;&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;button class="btn-icon" onclick="doSignOut()" title="Sign out"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/&gt;&lt;/svg&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- Pages --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div style="flex:1;overflow:hidden;position:relative;"&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;!-- LOG WORKOUT --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="page active" id="page-log"&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="card session-meta"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="card-title"&gt;Session Details&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;label class="form-label"&gt;Workout type&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;select id="session-type"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;option&gt;Push Day&lt;/option&gt;&lt;option&gt;Pull Day&lt;/option&gt;&lt;option&gt;Leg Day&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;option&gt;Full Body&lt;/option&gt;&lt;option&gt;Upper Body&lt;/option&gt;&lt;option&gt;Lower Body&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;option&gt;Cardio&lt;/option&gt;&lt;option&gt;Core&lt;/option&gt;&lt;option&gt;Custom&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/select&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;label class="form-label"&gt;Date&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;input type="date" id="session-date"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;label class="form-label"&gt;Session notes (optional)&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;textarea id="session-notes" rows="2" placeholder="How are you feeling? Any focus for today?"&gt;&lt;/textarea&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="card"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="card-header"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;h3&gt;Add Exercise&lt;/h3&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;span id="ex-count-badge"&gt;0 added&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div style="display:flex;flex-direction:column;gap:10px;"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;label class="form-label"&gt;Quick select&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;select id="ex-preset" onchange="fillPreset(this.value)"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;option value=""&gt;— Choose exercise —&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;optgroup label="Chest"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Bench Press&lt;/option&gt;&lt;option&gt;Incline DB Press&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Cable Chest Fly&lt;/option&gt;&lt;option&gt;Push-ups&lt;/option&gt;&lt;option&gt;Dips&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/optgroup&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;optgroup label="Back"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Pull-ups&lt;/option&gt;&lt;option&gt;Lat Pulldown&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Barbell Row&lt;/option&gt;&lt;option&gt;Seated Cable Row&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Face Pulls&lt;/option&gt;&lt;option&gt;Deadlift&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/optgroup&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;optgroup label="Shoulders"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Overhead Press&lt;/option&gt;&lt;option&gt;Lateral Raises&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Rear Delt Fly&lt;/option&gt;&lt;option&gt;Arnold Press&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/optgroup&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;optgroup label="Arms"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Barbell Curl&lt;/option&gt;&lt;option&gt;Hammer Curls&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Preacher Curl&lt;/option&gt;&lt;option&gt;Tricep Pushdown&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Overhead Tricep Extension&lt;/option&gt;&lt;option&gt;Skull Crushers&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/optgroup&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;optgroup label="Legs"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Barbell Squat&lt;/option&gt;&lt;option&gt;Romanian Deadlift&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Leg Press&lt;/option&gt;&lt;option&gt;Leg Curl&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Walking Lunges&lt;/option&gt;&lt;option&gt;Calf Raise&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Goblet Squat&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/optgroup&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;optgroup label="Core"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Hanging Leg Raises&lt;/option&gt;&lt;option&gt;Cable Crunches&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Plank&lt;/option&gt;&lt;option&gt;Russian Twists&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Ab Wheel Rollout&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/optgroup&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;optgroup label="Cardio / Bodyweight"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Incline Treadmill Walk&lt;/option&gt;&lt;option&gt;Squats (BW)&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Burpees&lt;/option&gt;&lt;option&gt;Box Jumps&lt;/option&gt;&lt;option&gt;Jump Rope&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/optgroup&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;/select&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;label class="form-label"&gt;Or type manually&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;input type="text" id="ex-name" placeholder="Exercise name..."&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="row3"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;label class="form-label"&gt;Sets&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;input type="number" id="ex-sets" placeholder="4" min="1" max="20"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;label class="form-label"&gt;Reps&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;input type="text" id="ex-reps" placeholder="8-10"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;label class="form-label"&gt;Weight&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;input type="text" id="ex-weight" placeholder="BW / 80"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="row2"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;label class="form-label"&gt;Unit&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;select id="ex-unit"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option value="kg"&gt;kg&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option value="lbs"&gt;lbs&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option value="BW"&gt;BW&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/select&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;label class="form-label"&gt;Notes&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;input type="text" id="ex-notes" placeholder="e.g. drop set"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;button class="btn btn-outline" onclick="addExercise()"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"&gt;&lt;path d="M12 5v14M5 12h14"/&gt;&lt;/svg&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>Add exercise</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div id="current-exercises-card" style="display:none" class="card"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="card-title"&gt;Added exercises&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div id="current-exercises-list"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;button class="btn btn-red" id="save-session-btn" style="display:none" onclick="saveSession()"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"&gt;&lt;path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/&gt;&lt;path d="M17 21v-8H7v8M7 3v5h8"/&gt;&lt;/svg&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>Save workout session</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;!-- HISTORY --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="page" id="page-history"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div style="display:flex;justify-content:space-between;align-items:center;"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div style="font-size:20px;font-weight:800;"&gt;Workout History&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;span id="history-count" style="font-size:12px;color:var(--muted);"&gt;&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div id="history-list"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;!-- BODY METRICS --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="page" id="page-metrics"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div style="font-size:20px;font-weight:800;margin-bottom:4px;"&gt;Body Metrics&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;!-- Latest summary --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="card" id="metrics-latest-card"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="card-title"&gt;Latest Reading&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div id="metrics-latest-content"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="loading-row"&gt;&lt;div class="spinner"&gt;&lt;/div&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;!-- Log new --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="card"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="card-header"&gt;&lt;h3&gt;Log New Reading&lt;/h3&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div style="display:flex;flex-direction:column;gap:10px;"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;label class="form-label"&gt;Date&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;input type="date" id="metric-date"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="row2"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;label class="form-label"&gt;Weight (kg)&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;input type="number" id="metric-weight" placeholder="103.35" step="0.1"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;label class="form-label"&gt;Body Fat %&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;input type="number" id="metric-bf" placeholder="36.2" step="0.1"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="row2"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;label class="form-label"&gt;Visceral Fat&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;input type="number" id="metric-vf" placeholder="18" step="1"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;label class="form-label"&gt;Skeletal Muscle %&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;input type="number" id="metric-sm" placeholder="41.1" step="0.1"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;label class="form-label"&gt;Body Water %&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;input type="number" id="metric-bw" placeholder="45.9" step="0.1"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;label class="form-label"&gt;Notes&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;textarea id="metric-notes" rows="2" placeholder="Morning weigh-in, post-workout..."&gt;&lt;/textarea&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;button class="btn btn-teal" onclick="saveMetric()"&gt;Save reading&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;!-- History --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="card"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="card-title"&gt;Recent History&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div id="metrics-history-list"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="loading-row"&gt;&lt;div class="spinner"&gt;&lt;/div&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;!-- MILESTONES --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="page" id="page-milestones"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div style="font-size:20px;font-weight:800;"&gt;Milestones&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="card"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="card-header"&gt;&lt;h3&gt;Record Achievement&lt;/h3&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div style="display:flex;flex-direction:column;gap:10px;"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;label class="form-label"&gt;Type&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;select id="ms-type"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;option value="</span><span class="s2">🏆</span><span class="s1"> Personal Best"&gt;</span><span class="s2">🏆</span><span class="s1"> Personal Best&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;option value="</span><span class="s2">💪</span><span class="s1"> Strength Milestone"&gt;</span><span class="s2">💪</span><span class="s1"> Strength Milestone&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;option value="</span><span class="s2">⚖️</span><span class="s1"> Weight Goal"&gt;</span><span class="s2">⚖️</span><span class="s1"> Weight Goal&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;option value="</span><span class="s2">🎯</span><span class="s1"> Consistency Win"&gt;</span><span class="s2">🎯</span><span class="s1"> Consistency Win&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;option value="</span><span class="s2">📝</span><span class="s1"> General Note"&gt;</span><span class="s2">📝</span><span class="s1"> General Note&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;/select&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;label class="form-label"&gt;Title&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;input type="text" id="ms-title" placeholder="e.g. First 100kg bench press!"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;label class="form-label"&gt;Details&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;textarea id="ms-notes" rows="3" placeholder="How it felt, what clicked, what led to this moment..."&gt;&lt;/textarea&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;button class="btn btn-red" onclick="saveMilestone()"&gt;Save milestone&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="card" id="milestones-card"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="card-title"&gt;All Milestones&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div id="milestones-list"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="loading-row"&gt;&lt;div class="spinner"&gt;&lt;/div&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;!-- STATS --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="page" id="page-stats"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div style="font-size:20px;font-weight:800;margin-bottom:4px;"&gt;Stats&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="stats-grid" id="stats-summary"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="card" id="pb-card" style="display:none"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="card-title"&gt;Personal Bests&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div id="pb-list"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="card" id="freq-card" style="display:none"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="card-title"&gt;Most logged exercises&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div id="freq-list"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="card" id="session-type-card" style="display:none"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="card-title"&gt;Session breakdown&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div id="session-type-list"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;!-- AI PLAN --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="page" id="page-ai"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div style="font-size:20px;font-weight:800;margin-bottom:4px;"&gt;AI Plan Builder&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div style="font-size:12px;color:var(--muted);margin-bottom:4px;"&gt;Powered by Claude AI&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="card"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="card-title"&gt;Primary Goal&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="goal-chips" id="goal-chips"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="goal-chip selected" onclick="selectGoal(this)"&gt;Fat Loss&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="goal-chip" onclick="selectGoal(this)"&gt;Build Muscle&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="goal-chip" onclick="selectGoal(this)"&gt;Strength Gains&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="goal-chip" onclick="selectGoal(this)"&gt;Body Recomp&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="goal-chip" onclick="selectGoal(this)"&gt;Endurance&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="goal-chip" onclick="selectGoal(this)"&gt;Athletic Performance&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="card"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="card-title"&gt;Your Details&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div style="display:flex;flex-direction:column;gap:10px;"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="row2"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;label class="form-label"&gt;Weight (kg)&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;input type="number" id="ai-weight" placeholder="103"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;label class="form-label"&gt;Age&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;input type="number" id="ai-age" placeholder="34"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="row2"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;label class="form-label"&gt;Training days/week&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;select id="ai-days"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;3&lt;/option&gt;&lt;option&gt;4&lt;/option&gt;&lt;option selected&gt;5&lt;/option&gt;&lt;option&gt;6&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/select&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;label class="form-label"&gt;Experience&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;select id="ai-level"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;option&gt;Beginner&lt;/option&gt;&lt;option selected&gt;Intermediate&lt;/option&gt;&lt;option&gt;Advanced&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/select&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;label class="form-label"&gt;Limitations or preferences&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;input type="text" id="ai-limits" placeholder="e.g. bad knees, no barbells..."&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="form-group"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;label class="form-label"&gt;Specific request (optional)&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;textarea id="ai-custom" rows="2" placeholder="e.g. 4-day push/pull split, compound focus..."&gt;&lt;/textarea&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;button class="btn btn-red" id="ai-gen-btn" onclick="generatePlan()"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"&gt;&lt;path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/&gt;&lt;/svg&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>Generate my personalised plan</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div id="ai-output-wrap" style="display:none;"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;span style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;"&gt;Generated Plan&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;button class="btn-ghost" onclick="copyPlan()"&gt;Copy&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="ai-output" id="ai-output"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;&lt;!-- end pages wrapper --&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- Bottom Nav --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;nav class="bottom-nav"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;button class="nav-btn active" id="nav-log" onclick="showPage('log')"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="3" width="7" height="7" rx="1"/&gt;&lt;rect x="14" y="3" width="7" height="7" rx="1"/&gt;&lt;rect x="3" y="14" width="7" height="7" rx="1"/&gt;&lt;path d="M14 17.5h7M17.5 14v7"/&gt;&lt;/svg&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;span&gt;Log&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;button class="nav-btn" id="nav-history" onclick="showPage('history')"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;svg viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="10"/&gt;&lt;polyline points="12 6 12 12 16 14"/&gt;&lt;/svg&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;span&gt;History&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;button class="nav-btn" id="nav-metrics" onclick="showPage('metrics')"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M3 3v18h18"/&gt;&lt;path d="M7 12l4-4 4 4 4-4"/&gt;&lt;/svg&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;span&gt;Body&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;button class="nav-btn" id="nav-milestones" onclick="showPage('milestones')"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;svg viewBox="0 0 24 24"&gt;&lt;path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/&gt;&lt;/svg&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;span&gt;Goals&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;button class="nav-btn" id="nav-stats" onclick="showPage('stats')"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;svg viewBox="0 0 24 24"&gt;&lt;line x1="18" y1="20" x2="18" y2="10"/&gt;&lt;line x1="12" y1="20" x2="12" y2="4"/&gt;&lt;line x1="6" y1="20" x2="6" y2="14"/&gt;&lt;/svg&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;span&gt;Stats&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;button class="nav-btn" id="nav-ai" onclick="showPage('ai')"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;svg viewBox="0 0 24 24"&gt;&lt;polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/&gt;&lt;/svg&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;span&gt;AI Plan&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/nav&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/div&gt;&lt;!-- end main-screen --&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">&lt;/div&gt;&lt;!-- end app --&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">&lt;div id="toast"&gt;&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">&lt;!-- ─── SUPABASE SDK ──────────────────────────────────────────────────────── --&gt;</span></p>
+<p class="p1"><span class="s1">&lt;script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"&gt;&lt;/script&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">&lt;script&gt;</span></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">// CONFIG<span class="Apple-converted-space">  </span>— replace placeholders after running SQL in Supabase</span></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p4"><span class="s4">const SUPABASE_URL<span class="Apple-converted-space">  </span>= '</span><span class="s1">https://adwydtcnczltiwqjnnts.supabase.co</span></p>
+<p class="p1"><span class="s1">';</span></p>
+<p class="p4"><span class="s4">const SUPABASE_KEY<span class="Apple-converted-space">  </span>= '</span><span class="s1">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3lkdGNuY3psdGl3cWpubnRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNzc0NjIsImV4cCI6MjA5Mzc1MzQ2Mn0.zDGaI9cfhLxmfZvIBFzz_q3uqum_9R5DiUixaWKZW1c</span></p>
+<p class="p1"><span class="s1">';</span></p>
+<p class="p1"><span class="s1">const ANTHROPIC_KEY = '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';</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">// INIT</span></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">let currentUser<span class="Apple-converted-space">  </span>= null;</span></p>
+<p class="p1"><span class="s1">let currentPage<span class="Apple-converted-space">  </span>= 'log';</span></p>
+<p class="p1"><span class="s1">let currentExs <span class="Apple-converted-space">  </span>= []; <span class="Apple-converted-space">  </span>// exercises being added in current session</span></p>
+<p class="p1"><span class="s1">let selectedGoal = 'Fat Loss';</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">// Set today's date on date inputs</span></p>
+<p class="p1"><span class="s1">document.getElementById('session-date').value = today();</span></p>
+<p class="p1"><span class="s1">document.getElementById('metric-date').value<span class="Apple-converted-space">  </span>= today();</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function today() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>return new Date().toISOString().split('T')[0];</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">// AUTH</span></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">sb.auth.onAuthStateChange((_event, session) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (session?.user) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>currentUser = session.user;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('auth-screen').classList.remove('active');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('main-screen').classList.add('active');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('user-label').textContent =</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>session.user.user_metadata?.display_name || session.user.email?.split('@')[0] || '';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>initApp();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>currentUser = null;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('auth-screen').classList.add('active');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('main-screen').classList.remove('active');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
+<p class="p1"><span class="s1">});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function switchAuthTab(tab) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.querySelectorAll('.auth-tab').forEach(b =&gt; b.classList.remove('active'));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.querySelector(`.auth-tab[onclick*="${tab}"]`).classList.add('active');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.getElementById('login-form').style.display<span class="Apple-converted-space">  </span>= tab === 'login'<span class="Apple-converted-space">  </span>? 'flex' : 'none';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.getElementById('signup-form').style.display = tab === 'signup' ? 'flex' : 'none';</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">async function doLogin() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const email = document.getElementById('login-email').value.trim();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const pw<span class="Apple-converted-space">    </span>= document.getElementById('login-pw').value;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const msg <span class="Apple-converted-space">  </span>= document.getElementById('login-msg');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>msg.textContent = 'Signing in...'; msg.className = 'auth-msg';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const { error } = await sb.auth.signInWithPassword({ email, password: pw });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (error) { msg.textContent = error.message; msg.className = 'auth-msg error'; }</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">async function doSignup() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const name<span class="Apple-converted-space">  </span>= document.getElementById('signup-name').value.trim();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const email = document.getElementById('signup-email').value.trim();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const pw<span class="Apple-converted-space">    </span>= document.getElementById('signup-pw').value;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const msg <span class="Apple-converted-space">  </span>= document.getElementById('signup-msg');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (!name) { msg.textContent = 'Please enter a display name.'; msg.className = 'auth-msg error'; return; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>msg.textContent = 'Creating account...'; msg.className = 'auth-msg';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const { error } = await sb.auth.signUp({</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>email, password: pw,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>options: { data: { display_name: name } }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (error) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>msg.textContent = error.message; msg.className = 'auth-msg error';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>msg.textContent = 'Check your email to confirm your account, then log in.';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>msg.className = 'auth-msg success';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">async function doSignOut() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>await sb.auth.signOut();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>currentExs = [];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>toast('Signed out');</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">// NAVIGATION</span></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">function initApp() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>showPage('log');</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function showPage(page) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.querySelectorAll('.page').forEach(p =&gt; p.classList.remove('active'));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.querySelectorAll('.nav-btn').forEach(b =&gt; b.classList.remove('active'));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.getElementById('page-' + page).classList.add('active');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.getElementById('nav-' + page).classList.add('active');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>currentPage = page;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (page === 'history')<span class="Apple-converted-space">    </span>loadHistory();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (page === 'metrics')<span class="Apple-converted-space">    </span>loadMetrics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (page === 'milestones') loadMilestones();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (page === 'stats')<span class="Apple-converted-space">      </span>loadStats();</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">// TOAST</span></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">function toast(msg, isError = false) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const el = document.getElementById('toast');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>el.textContent = msg;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>el.className = isError ? 'error-toast show' : 'show';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>setTimeout(() =&gt; el.className = '', 2400);</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">// LOG WORKOUT</span></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">function fillPreset(val) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (!val) return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.getElementById('ex-name').value = val;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.getElementById('ex-preset').value = '';</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function addExercise() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const name <span class="Apple-converted-space">  </span>= document.getElementById('ex-name').value.trim();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (!name) { toast('Enter an exercise name', true); return; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const sets <span class="Apple-converted-space">  </span>= document.getElementById('ex-sets').value <span class="Apple-converted-space">  </span>|| '3';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const reps <span class="Apple-converted-space">  </span>= document.getElementById('ex-reps').value <span class="Apple-converted-space">  </span>|| '10';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const weight = document.getElementById('ex-weight').value || 'BW';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const unit <span class="Apple-converted-space">  </span>= document.getElementById('ex-unit').value <span class="Apple-converted-space">  </span>|| 'kg';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const notes<span class="Apple-converted-space">  </span>= document.getElementById('ex-notes').value.trim();</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>currentExs.push({ name, sets: parseInt(sets) || 3, reps, weight, unit, notes });</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// clear fields</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>['ex-name','ex-sets','ex-reps','ex-weight','ex-notes'].forEach(id =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById(id).value = '';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.getElementById('ex-preset').value = '';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>renderCurrentExercises();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>toast(name + ' added');</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function removeExercise(i) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>currentExs.splice(i, 1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>renderCurrentExercises();</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function renderCurrentExercises() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const count = currentExs.length;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.getElementById('ex-count-badge').textContent = count + ' added';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const card = document.getElementById('current-exercises-card');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const list = document.getElementById('current-exercises-list');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const saveBtn = document.getElementById('save-session-btn');</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (count === 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>card.style.display = 'none';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>saveBtn.style.display = 'none';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>card.style.display = 'block';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>saveBtn.style.display = 'flex';</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>list.innerHTML = currentExs.map((ex, i) =&gt; `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="ex-item"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="ex-name"&gt;${ex.name}&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="ex-detail"&gt;${ex.sets} sets × ${ex.reps} reps${ex.notes ? ' · ' + ex.notes : ''}&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div style="display:flex;align-items:center;gap:10px;"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="ex-weight"&gt;${ex.weight === 'BW' ? 'BW' : ex.weight}&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="ex-unit"&gt;${ex.weight === 'BW' ? '' : ex.unit}&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;button onclick="removeExercise(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px;"&gt;×&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>`).join('');</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">async function saveSession() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (!currentExs.length) { toast('Add at least one exercise', true); return; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const btn = document.getElementById('save-session-btn');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>btn.disabled = true; btn.innerHTML = '&lt;div class="spinner"&gt;&lt;/div&gt; Saving...';</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const sessionType<span class="Apple-converted-space">  </span>= document.getElementById('session-type').value;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const sessionDate<span class="Apple-converted-space">  </span>= document.getElementById('session-date').value;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const sessionNotes = document.getElementById('session-notes').value.trim();</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Insert session</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const { data: session, error: sErr } = await sb</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.from('workout_sessions')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.insert({ user_id: currentUser.id, session_type: sessionType, session_date: sessionDate, notes: sessionNotes || null })</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.select()</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.single();</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (sErr) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>toast('Error saving session: ' + sErr.message, true);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.disabled = false; btn.innerHTML = '</span><span class="s2">💾</span><span class="s1"> Save workout session';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Insert exercises</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const exRows = currentExs.map(ex =&gt; ({</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>session_id:<span class="Apple-converted-space">    </span>session.id,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>user_id: <span class="Apple-converted-space">      </span>currentUser.id,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>exercise_name: ex.name,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>sets:<span class="Apple-converted-space">          </span>ex.sets,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>reps:<span class="Apple-converted-space">          </span>ex.reps,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>weight_kg: <span class="Apple-converted-space">    </span>ex.weight === 'BW' ? null : parseFloat(ex.weight) || null,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>weight_unit: <span class="Apple-converted-space">  </span>ex.unit,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>notes: <span class="Apple-converted-space">        </span>ex.notes || null,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}));</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const { error: eErr } = await sb.from('exercises').insert(exRows);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (eErr) { toast('Exercises saved with error: ' + eErr.message, true); }</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Reset</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>currentExs = [];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>renderCurrentExercises();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.getElementById('session-notes').value = '';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.getElementById('session-date').value<span class="Apple-converted-space">  </span>= today();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>btn.disabled = false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>btn.innerHTML = '</span><span class="s2">💾</span><span class="s1"> Save workout session';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>btn.style.display = 'none';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>toast('Session saved! </span><span class="s2">💪</span><span class="s1">');</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">// HISTORY</span></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">async function loadHistory() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const list = document.getElementById('history-list');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>list.innerHTML = '&lt;div class="loading-row"&gt;&lt;div class="spinner"&gt;&lt;/div&gt; Loading...&lt;/div&gt;';</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const { data: sessions, error } = await sb</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.from('workout_sessions')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.select('*, exercises(*)')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.eq('user_id', currentUser.id)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.order('session_date', { ascending: false })</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.order('created_at', { ascending: false });</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (error) { list.innerHTML = `&lt;p style="color:var(--red);padding:16px"&gt;${error.message}&lt;/p&gt;`; return; }</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.getElementById('history-count').textContent = sessions.length + ' sessions';</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (!sessions.length) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>list.innerHTML = `&lt;div class="empty-state"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5"&gt;&lt;rect x="3" y="3" width="18" height="18" rx="2"/&gt;&lt;path d="M3 9h18M9 21V9"/&gt;&lt;/svg&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;p&gt;No sessions yet. Log your first workout!&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>list.innerHTML = sessions.map(s =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const d<span class="Apple-converted-space">    </span>= new Date(s.session_date);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const dateStr = d.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short', year:'numeric' });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const exs<span class="Apple-converted-space">  </span>= s.exercises || [];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const chips = exs.slice(0, 5).map(e =&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>`&lt;span class="chip"&gt;${e.exercise_name}${e.weight_kg ? ' · ' + e.weight_kg + e.weight_unit : ''}&lt;/span&gt;`</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>).join('');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const moreChips = exs.length &gt; 5 ? `&lt;span class="chip"&gt;+${exs.length - 5} more&lt;/span&gt;` : '';</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const exDetail = exs.map(e =&gt; `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="session-ex-row"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;span class="name"&gt;${e.exercise_name}&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;span class="stats"&gt;${e.sets}×${e.reps}${e.weight_kg ? ' · ' + e.weight_kg + e.weight_unit : ' · BW'}${e.notes ? ' · ' + e.notes : ''}&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;`).join('');</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="session-card"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="session-card-header" onclick="toggleSession('${s.id}')"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="session-info"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;h4&gt;${s.session_type}&lt;/h4&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;p&gt;${dateStr} · ${exs.length} exercise${exs.length !== 1 ? 's' : ''}${s.notes ? ' · ' + s.notes : ''}&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;span class="expand-icon" id="icon-${s.id}"&gt;</span><span class="s5">⌄</span><span class="s1">&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="session-chips"&gt;${chips}${moreChips}&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="session-detail" id="detail-${s.id}"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>${exDetail}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div style="margin-top:10px;display:flex;justify-content:flex-end;"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;button class="btn-ghost" style="color:var(--red)" onclick="deleteSession('${s.id}')"&gt;Delete session&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}).join('');</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function toggleSession(id) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const detail = document.getElementById('detail-' + id);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const icon <span class="Apple-converted-space">  </span>= document.getElementById('icon-' + id);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const isOpen = detail.classList.contains('open');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>detail.classList.toggle('open', !isOpen);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>icon.classList.toggle('open', !isOpen);</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">async function deleteSession(id) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (!confirm('Delete this session? This cannot be undone.')) return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const { error } = await sb.from('workout_sessions').delete().eq('id', id).eq('user_id', currentUser.id);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (error) { toast('Error: ' + error.message, true); return; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>toast('Session deleted');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>loadHistory();</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">// BODY METRICS</span></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">async function loadMetrics() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const latestEl<span class="Apple-converted-space">  </span>= document.getElementById('metrics-latest-content');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const historyEl = document.getElementById('metrics-history-list');</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const { data, error } = await sb</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.from('body_metrics')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.select('*')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.eq('user_id', currentUser.id)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.order('recorded_date', { ascending: false })</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.limit(20);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (error) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>latestEl.innerHTML<span class="Apple-converted-space">  </span>= `&lt;p style="color:var(--red)"&gt;${error.message}&lt;/p&gt;`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>historyEl.innerHTML = '';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (!data.length) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>latestEl.innerHTML<span class="Apple-converted-space">  </span>= '&lt;p style="color:var(--muted);font-size:13px;"&gt;No readings yet. Log your first reading below.&lt;/p&gt;';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>historyEl.innerHTML = '&lt;p style="color:var(--muted);font-size:13px;padding:8px 0"&gt;No history yet.&lt;/p&gt;';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const latest = data[0];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>latestEl.innerHTML = `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="metric-grid"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>${latest.weight_kg <span class="Apple-converted-space">      </span>? `&lt;div class="metric-tile"&gt;&lt;div class="val"&gt;${latest.weight_kg}&lt;span style="font-size:14px;color:var(--muted)"&gt;kg&lt;/span&gt;&lt;/div&gt;&lt;div class="lbl"&gt;Weight&lt;/div&gt;&lt;/div&gt;` : ''}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>${latest.body_fat_pct<span class="Apple-converted-space">    </span>? `&lt;div class="metric-tile"&gt;&lt;div class="val"&gt;${latest.body_fat_pct}&lt;span style="font-size:14px;color:var(--muted)"&gt;%&lt;/span&gt;&lt;/div&gt;&lt;div class="lbl"&gt;Body Fat&lt;/div&gt;&lt;/div&gt;` : ''}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>${latest.visceral_fat_score ? `&lt;div class="metric-tile"&gt;&lt;div class="val"&gt;${latest.visceral_fat_score}&lt;/div&gt;&lt;div class="lbl"&gt;Visceral Fat&lt;/div&gt;&lt;/div&gt;` : ''}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>${latest.skeletal_muscle_pct ? `&lt;div class="metric-tile"&gt;&lt;div class="val"&gt;${latest.skeletal_muscle_pct}&lt;span style="font-size:14px;color:var(--muted)"&gt;%&lt;/span&gt;&lt;/div&gt;&lt;div class="lbl"&gt;Skeletal Muscle&lt;/div&gt;&lt;/div&gt;` : ''}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>${latest.body_water_pct<span class="Apple-converted-space">  </span>? `&lt;div class="metric-tile"&gt;&lt;div class="val"&gt;${latest.body_water_pct}&lt;span style="font-size:14px;color:var(--muted)"&gt;%&lt;/span&gt;&lt;/div&gt;&lt;div class="lbl"&gt;Body Water&lt;/div&gt;&lt;/div&gt;` : ''}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;p style="font-size:11px;color:var(--muted);margin-top:10px;"&gt;${new Date(latest.recorded_date).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}${latest.notes ? ' · ' + latest.notes : ''}&lt;/p&gt;`;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>historyEl.innerHTML = data.map(m =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const d = new Date(m.recorded_date).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const parts = [];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (m.weight_kg)<span class="Apple-converted-space">            </span>parts.push(`${m.weight_kg}kg`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (m.body_fat_pct) <span class="Apple-converted-space">        </span>parts.push(`BF ${m.body_fat_pct}%`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (m.visceral_fat_score) <span class="Apple-converted-space">  </span>parts.push(`VF ${m.visceral_fat_score}`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (m.skeletal_muscle_pct)<span class="Apple-converted-space">  </span>parts.push(`SM ${m.skeletal_muscle_pct}%`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="metric-history-item"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;span class="date"&gt;${d}&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;span class="vals"&gt;${parts.join(' · ')}&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}).join('');</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">async function saveMetric() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const payload = {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>user_id:<span class="Apple-converted-space">              </span>currentUser.id,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>recorded_date:<span class="Apple-converted-space">        </span>document.getElementById('metric-date').value,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>weight_kg:<span class="Apple-converted-space">            </span>parseFloat(document.getElementById('metric-weight').value) || null,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>body_fat_pct: <span class="Apple-converted-space">        </span>parseFloat(document.getElementById('metric-bf').value) <span class="Apple-converted-space">    </span>|| null,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>visceral_fat_score: <span class="Apple-converted-space">  </span>parseInt(document.getElementById('metric-vf').value) <span class="Apple-converted-space">      </span>|| null,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>skeletal_muscle_pct:<span class="Apple-converted-space">  </span>parseFloat(document.getElementById('metric-sm').value) <span class="Apple-converted-space">    </span>|| null,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>body_water_pct: <span class="Apple-converted-space">      </span>parseFloat(document.getElementById('metric-bw').value) <span class="Apple-converted-space">    </span>|| null,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>notes:<span class="Apple-converted-space">                </span>document.getElementById('metric-notes').value.trim() || null,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (!payload.recorded_date) { toast('Select a date', true); return; }</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const { error } = await sb.from('body_metrics').insert(payload);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (error) { toast('Error: ' + error.message, true); return; }</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>['metric-weight','metric-bf','metric-vf','metric-sm','metric-bw','metric-notes'].forEach(id =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById(id).value = '';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.getElementById('metric-date').value = today();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>toast('Metrics saved!');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>loadMetrics();</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">// MILESTONES</span></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">async function loadMilestones() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const list = document.getElementById('milestones-list');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>list.innerHTML = '&lt;div class="loading-row"&gt;&lt;div class="spinner"&gt;&lt;/div&gt;&lt;/div&gt;';</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const { data, error } = await sb</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.from('milestones')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.select('*')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.eq('user_id', currentUser.id)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.order('created_at', { ascending: false });</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (error) { list.innerHTML = `&lt;p style="color:var(--red)"&gt;${error.message}&lt;/p&gt;`; return; }</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (!data.length) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>list.innerHTML = `&lt;div class="empty-state"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5"&gt;&lt;path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/&gt;&lt;/svg&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;p&gt;No milestones yet. Record your first win!&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>list.innerHTML = data.map(m =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const icon = m.milestone_type.split(' ')[0];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const d<span class="Apple-converted-space">    </span>= new Date(m.created_at).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="milestone-item"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="ms-icon"&gt;${icon}&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="ms-body"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="ms-type"&gt;${m.milestone_type.replace(/^\S+\s/,'')}&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="ms-title"&gt;${m.title}&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>${m.notes ? `&lt;div class="ms-notes"&gt;${m.notes}&lt;/div&gt;` : ''}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="ms-date"&gt;${d}&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;button class="ms-del" onclick="deleteMilestone('${m.id}')"&gt;×&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}).join('');</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">async function saveMilestone() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const title = document.getElementById('ms-title').value.trim();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (!title) { toast('Add a title', true); return; }</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const { error } = await sb.from('milestones').insert({</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>user_id:<span class="Apple-converted-space">        </span>currentUser.id,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>milestone_type: document.getElementById('ms-type').value,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>title,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>notes: document.getElementById('ms-notes').value.trim() || null,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (error) { toast('Error: ' + error.message, true); return; }</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.getElementById('ms-title').value = '';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.getElementById('ms-notes').value = '';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>toast('Milestone saved! </span><span class="s2">🏆</span><span class="s1">');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>loadMilestones();</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">async function deleteMilestone(id) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (!confirm('Delete this milestone?')) return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>await sb.from('milestones').delete().eq('id', id).eq('user_id', currentUser.id);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>toast('Deleted');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>loadMilestones();</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">// STATS</span></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">async function loadStats() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const summaryEl = document.getElementById('stats-summary');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>summaryEl.innerHTML = '&lt;div class="loading-row" style="grid-column:span 2"&gt;&lt;div class="spinner"&gt;&lt;/div&gt;&lt;/div&gt;';</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const { data: sessions } = await sb</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.from('workout_sessions')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.select('*, exercises(*)')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.eq('user_id', currentUser.id)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.order('session_date', { ascending: false });</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (!sessions) return;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// This week</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const now<span class="Apple-converted-space">    </span>= new Date();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const monday = new Date(now); monday.setDate(now.getDate() - ((now.getDay() + 6) % 7)); monday.setHours(0,0,0,0);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const thisWeek = sessions.filter(s =&gt; new Date(s.session_date) &gt;= monday).length;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Streak</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const dateSessions = [...new Set(sessions.map(s =&gt; s.session_date))].sort((a,b)=&gt;b.localeCompare(a));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>let streak = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>for (let i = 0; i &lt; dateSessions.length; i++) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const d = new Date(dateSessions[i]);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const expected = new Date(now); expected.setDate(now.getDate() - i);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>expected.setHours(0,0,0,0);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (d.toDateString() === expected.toDateString()) streak++;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>else break;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Total exercises</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const allExs = sessions.flatMap(s =&gt; s.exercises || []);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const totalSets = allExs.reduce((a, e) =&gt; a + (e.sets || 0), 0);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>summaryEl.innerHTML = `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="stat-card"&gt;&lt;div class="stat-val"&gt;${sessions.length}&lt;/div&gt;&lt;div class="stat-lbl"&gt;Total sessions&lt;/div&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="stat-card"&gt;&lt;div class="stat-val"&gt;${thisWeek}&lt;/div&gt;&lt;div class="stat-lbl"&gt;This week&lt;/div&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="stat-card"&gt;&lt;div class="stat-val"&gt;${streak}&lt;/div&gt;&lt;div class="stat-lbl"&gt;Day streak&lt;/div&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="stat-card"&gt;&lt;div class="stat-val"&gt;${totalSets}&lt;/div&gt;&lt;div class="stat-lbl"&gt;Total sets&lt;/div&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>`;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Personal bests (by exercise name, highest weight_kg)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const pbMap = {};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>allExs.forEach(e =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (e.weight_kg &amp;&amp; e.weight_kg &gt; 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if (!pbMap[e.exercise_name] || e.weight_kg &gt; pbMap[e.exercise_name]) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>pbMap[e.exercise_name] = e.weight_kg;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const pbEntries = Object.entries(pbMap).sort((a,b) =&gt; b[1]-a[1]).slice(0,15);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const pbCard = document.getElementById('pb-card');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const pbList = document.getElementById('pb-list');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (pbEntries.length) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>pbCard.style.display = 'block';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>pbList.innerHTML = pbEntries.map(([name, kg]) =&gt; `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="pb-row"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;span class="pb-name"&gt;${name}&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;span class="pb-weight"&gt;${kg} kg&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;`).join('');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Most logged exercises (frequency)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const freqMap = {};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>allExs.forEach(e =&gt; { freqMap[e.exercise_name] = (freqMap[e.exercise_name]||0) + 1; });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const freqEntries = Object.entries(freqMap).sort((a,b)=&gt;b[1]-a[1]).slice(0,10);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const freqCard = document.getElementById('freq-card');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const freqList = document.getElementById('freq-list');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (freqEntries.length) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>freqCard.style.display = 'block';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const maxFreq = freqEntries[0][1];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>freqList.innerHTML = freqEntries.map(([name, count]) =&gt; `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="freq-bar-wrap"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="freq-bar-label"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;span class="ex-n"&gt;${name}&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;span class="ex-c"&gt;${count}×&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="freq-bar-bg"&gt;&lt;div class="freq-bar-fill" style="width:${Math.round((count/maxFreq)*100)}%"&gt;&lt;/div&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;`).join('');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Session type breakdown</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const typeMap = {};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>sessions.forEach(s =&gt; { typeMap[s.session_type] = (typeMap[s.session_type]||0)+1; });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const typeEntries = Object.entries(typeMap).sort((a,b)=&gt;b[1]-a[1]);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const typeCard = document.getElementById('session-type-card');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const typeList = document.getElementById('session-type-list');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (typeEntries.length) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>typeCard.style.display = 'block';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const maxType = typeEntries[0][1];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>typeList.innerHTML = typeEntries.map(([name, count]) =&gt; `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="freq-bar-wrap"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="freq-bar-label"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;span class="ex-n"&gt;${name}&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;span class="ex-c"&gt;${count} sessions&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="freq-bar-bg"&gt;&lt;div class="freq-bar-fill" style="width:${Math.round((count/maxType)*100)}%;background:var(--teal)"&gt;&lt;/div&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;`).join('');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">// AI PLAN</span></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">function selectGoal(el) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.querySelectorAll('.goal-chip').forEach(c =&gt; c.classList.remove('selected'));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>el.classList.add('selected');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>selectedGoal = el.textContent;</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function copyPlan() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const text = document.getElementById('ai-output').innerText;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>navigator.clipboard.writeText(text).then(() =&gt; toast('Copied!'));</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">async function generatePlan() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const btn<span class="Apple-converted-space">      </span>= document.getElementById('ai-gen-btn');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const outputWrap = document.getElementById('ai-output-wrap');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const output <span class="Apple-converted-space">  </span>= document.getElementById('ai-output');</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const weight <span class="Apple-converted-space">  </span>= document.getElementById('ai-weight').value || 'not specified';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const age<span class="Apple-converted-space">      </span>= document.getElementById('ai-age').value<span class="Apple-converted-space">    </span>|| 'not specified';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const days <span class="Apple-converted-space">    </span>= document.getElementById('ai-days').value;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const level<span class="Apple-converted-space">    </span>= document.getElementById('ai-level').value;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const limits <span class="Apple-converted-space">  </span>= document.getElementById('ai-limits').value.trim();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const custom <span class="Apple-converted-space">  </span>= document.getElementById('ai-custom').value.trim();</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>btn.disabled = true;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>btn.innerHTML = '&lt;div class="spinner"&gt;&lt;/div&gt; Generating...';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>outputWrap.style.display = 'block';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>output.innerHTML = '&lt;div class="typing-dots"&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;';</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const prompt = `You are an expert personal trainer and sports nutritionist. Create a detailed, personalised workout plan.</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">User profile:</span></p>
+<p class="p1"><span class="s1">- Goal: ${selectedGoal}</span></p>
+<p class="p1"><span class="s1">- Current weight: ${weight}kg</span></p>
+<p class="p1"><span class="s1">- Age: ${age}</span></p>
+<p class="p1"><span class="s1">- Training days per week: ${days}</span></p>
+<p class="p1"><span class="s1">- Experience level: ${level}</span></p>
+<p class="p1"><span class="s1">${limits ? `- Limitations/preferences: ${limits}` : ''}</span></p>
+<p class="p1"><span class="s1">${custom<span class="Apple-converted-space">  </span>? `- Specific request: ${custom}`<span class="Apple-converted-space">          </span>: ''}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">Provide:</span></p>
+<p class="p1"><span class="s1">1. Weekly training split (day-by-day breakdown)</span></p>
+<p class="p1"><span class="s1">2. 5-7 exercises per session with sets, reps, and rest periods</span></p>
+<p class="p1"><span class="s1">3. Progression notes (when to increase weight)</span></p>
+<p class="p1"><span class="s1">4. Cardio recommendations</span></p>
+<p class="p1"><span class="s1">5. One key nutrition tip for their specific goal</span></p>
+<p class="p1"><span class="s1">6. One motivational insight tailored to their profile</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">Format with clear headings. Be specific, practical, and concise. Under 600 words.`;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>try {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const res = await fetch('https://api.anthropic.com/v1/messages', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>method: 'POST',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>headers: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>'Content-Type':<span class="Apple-converted-space">      </span>'application/json',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>'x-api-key': <span class="Apple-converted-space">        </span>ANTHROPIC_KEY,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>'anthropic-version': '2023-06-01',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>'anthropic-dangerous-allow-browser': 'true',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>body: JSON.stringify({</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>model:<span class="Apple-converted-space">      </span>'claude-sonnet-4-20250514',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>max_tokens: 1000,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>messages: <span class="Apple-converted-space">  </span>[{ role: 'user', content: prompt }]</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>})</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (!res.ok) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const err = await res.json();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>throw new Error(err.error?.message || 'API error ' + res.status);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const data = await res.json();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>let text <span class="Apple-converted-space">  </span>= data.content?.[0]?.text || 'No response received.';</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Basic markdown </span><span class="s6">→</span><span class="s1"> HTML</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>text = text</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>.replace(/^### (.+)$/gm,<span class="Apple-converted-space">  </span>'&lt;h3&gt;$1&lt;/h3&gt;')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>.replace(/^## (.+)$/gm, <span class="Apple-converted-space">  </span>'&lt;h3&gt;$1&lt;/h3&gt;')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>.replace(/^# (.+)$/gm,<span class="Apple-converted-space">    </span>'&lt;h3&gt;$1&lt;/h3&gt;')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>.replace(/\*\*(.+?)\*\*/g,'&lt;strong&gt;$1&lt;/strong&gt;')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>.replace(/^\- (.+)$/gm, <span class="Apple-converted-space">  </span>'&lt;li&gt;$1&lt;/li&gt;')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>.replace(/(&lt;li&gt;.*&lt;\/li&gt;)/s, '&lt;ul&gt;$1&lt;/ul&gt;')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>.replace(/\n\n/g,<span class="Apple-converted-space">          </span>'&lt;br&gt;&lt;br&gt;')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>.replace(/\n/g,<span class="Apple-converted-space">            </span>'&lt;br&gt;');</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>output.innerHTML = text;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>} catch (err) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>output.innerHTML = `&lt;span style="color:var(--red)"&gt;Error: ${err.message}. Check your Anthropic API key and account credit.&lt;/span&gt;`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>btn.disabled = false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>btn.innerHTML = '</span><span class="s2">⚡</span><span class="s1"> Regenerate plan';</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">// SERVICE WORKER (inline registration)</span></p>
+<p class="p3"><span class="s3">// </span><span class="s1">═══════════════════════════════════════════════════════════════════════════</span></p>
+<p class="p1"><span class="s1">if ('serviceWorker' in navigator) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const swCode = `</span></p>
+<p class="p1"><span class="s1">const CACHE = 'formd-v1';</span></p>
+<p class="p1"><span class="s1">const ASSETS = ['/'];</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">self.addEventListener('install', e =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>e.waitUntil(caches.open(CACHE).then(c =&gt; c.addAll(ASSETS)).then(() =&gt; self.skipWaiting()));</span></p>
+<p class="p1"><span class="s1">});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">self.addEventListener('activate', e =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>e.waitUntil(</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>caches.keys().then(keys =&gt; Promise.all(</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>keys.filter(k =&gt; k !== CACHE).map(k =&gt; caches.delete(k))</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>)).then(() =&gt; self.clients.claim())</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>);</span></p>
+<p class="p1"><span class="s1">});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">self.addEventListener('fetch', e =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (e.request.method !== 'GET') return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const url = new URL(e.request.url);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Don't cache Supabase or Anthropic API calls</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (url.hostname.includes('supabase') || url.hostname.includes('anthropic')) return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>e.respondWith(</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>fetch(e.request)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>.then(res =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const clone = res.clone();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>caches.open(CACHE).then(c =&gt; c.put(e.request, clone));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>return res;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>})</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>.catch(() =&gt; caches.match(e.request))</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>);</span></p>
+<p class="p1"><span class="s1">});`;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const swBlob = new Blob([swCode], { type: 'application/javascript' });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const swURL<span class="Apple-converted-space">  </span>= URL.createObjectURL(swBlob);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>navigator.serviceWorker.register(swURL, { scope: '/' })</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.catch(e =&gt; console.warn('SW registration failed:', e));</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p1"><span class="s1">&lt;/script&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
+</body>
+</html>
