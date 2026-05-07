@@ -18,15 +18,13 @@ document.write('<link rel="manifest" href="'+URL.createObjectURL(b)+'">');
 :root{
   --bg:#0d0d0d;--surface:#161616;--card:#1c1c1c;--card2:#222;--border:#2c2c2c;
   --red:#e63946;--red-dim:rgba(230,57,70,.15);--teal:#00b4d8;--teal-dim:rgba(0,180,216,.12);
-  --gold:#d4a843;--green:#2a9d8f;--orange:#f4a261;--purple:#9b5de5;
+  --gold:#d4a843;--green:#2a9d8f;--orange:#f4a261;--purple:#9b5de5;--hyrox:#ff6b35;
   --text:#f0ede8;--soft:#aaa;--muted:#666;
   --radius:12px;--radius-sm:8px;--safe-bottom:env(safe-area-inset-bottom,0px);
 }
 html{height:100%;background:var(--bg)}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;height:100%;overflow:hidden;-webkit-font-smoothing:antialiased}
 #app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:480px;margin:0 auto}
-
-/* SCREENS */
 .screen{display:none;flex:1;flex-direction:column;overflow:hidden}
 .screen.active{display:flex}
 
@@ -97,6 +95,7 @@ textarea{resize:none;line-height:1.5}
 .btn-red{background:var(--red);color:#fff}
 .btn-teal{background:var(--teal);color:#000}
 .btn-purple{background:var(--purple);color:#fff}
+.btn-hyrox{background:var(--hyrox);color:#fff}
 .btn-outline{background:transparent;border:1px solid var(--border);color:var(--soft)}
 .btn-ghost{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:4px 8px;border-radius:6px;font-family:inherit}
 .btn-sm{padding:6px 12px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--soft);cursor:pointer;font-family:inherit;white-space:nowrap}
@@ -108,7 +107,7 @@ textarea{resize:none;line-height:1.5}
 #toast.err{background:var(--red)}
 #toast.show{opacity:1}
 
-/* SPINNER */
+/* SPINNER / EMPTY */
 .spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-row{display:flex;align-items:center;justify-content:center;padding:32px;color:var(--muted);gap:10px;font-size:13px}
@@ -118,7 +117,7 @@ textarea{resize:none;line-height:1.5}
 
 /* AUTOCOMPLETE */
 .ac-wrap{position:relative}
-.ac-list{position:absolute;top:100%;left:0;right:0;background:var(--card2);border:1px solid var(--border);border-radius:var(--radius-sm);z-index:100;max-height:180px;overflow-y:auto;display:none;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.ac-list{position:absolute;top:100%;left:0;right:0;background:var(--card2);border:1px solid var(--border);border-radius:var(--radius-sm);z-index:100;max-height:200px;overflow-y:auto;display:none;box-shadow:0 8px 24px rgba(0,0,0,.5)}
 .ac-list.show{display:block}
 .ac-item{padding:10px 12px;font-size:13px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
 .ac-item:last-child{border-bottom:none}
@@ -126,26 +125,49 @@ textarea{resize:none;line-height:1.5}
 .ac-item .ac-n{font-weight:600;color:var(--text)}
 .ac-item .ac-g{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
 .ac-hi{color:var(--red)}
+.ac-item .ac-hyrox{font-size:10px;font-weight:700;color:var(--hyrox);background:rgba(255,107,53,.12);border-radius:4px;padding:1px 5px;margin-left:4px}
+
+/* SET / METRIC TYPE TOGGLE */
+.metric-type-tabs{display:flex;gap:4px;margin-bottom:10px;background:var(--surface);border-radius:var(--radius-sm);padding:3px}
+.mt-tab{flex:1;padding:7px 6px;border:none;background:none;color:var(--muted);font-size:12px;font-weight:600;border-radius:5px;cursor:pointer;transition:all .2s;font-family:inherit;text-align:center}
+.mt-tab.active{background:var(--card2);color:var(--text)}
 
 /* SET BUILDER */
-.set-header-row{display:grid;grid-template-columns:26px 1fr 1fr 1fr auto;gap:6px;padding:0 10px;margin-bottom:4px}
+.set-header-row{display:grid;gap:5px;padding:0 10px;margin-bottom:4px}
 .set-header-row span{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;text-align:center}
-.set-row{display:grid;grid-template-columns:26px 1fr 1fr 1fr auto;gap:6px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:6px}
+.set-row{display:grid;gap:5px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:5px}
 .set-num{font-size:11px;font-weight:700;color:var(--muted);text-align:center}
 .set-inp{background:var(--card);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;padding:6px 6px;text-align:center;width:100%;outline:none;font-family:inherit}
 .set-inp:focus{border-color:var(--teal)}
 .set-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:0 2px}
 .set-del:active{color:var(--red)}
-.set-actions{display:flex;gap:6px;margin-bottom:2px}
 
-/* EXERCISE GROUPS */
+/* metric-type columns: strength = 5 cols, cardio = 4 cols */
+.set-row.strength-row{grid-template-columns:26px 1fr 1fr 1fr 1fr auto}
+.set-row.cardio-row{grid-template-columns:26px 1fr 1fr 1fr auto}
+.set-header-row.strength-hdr{grid-template-columns:26px 1fr 1fr 1fr 1fr auto}
+.set-header-row.cardio-hdr{grid-template-columns:26px 1fr 1fr 1fr auto}
+
+/* EX GROUPS */
 .ex-group{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:8px}
 .ex-group-head{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--card)}
 .ex-group-name{font-weight:700;font-size:14px}
 .ex-group-sub{font-size:11px;color:var(--muted);margin-top:1px}
-.ex-set-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 12px;border-bottom:1px solid var(--border);color:var(--soft)}
+.ex-set-row{display:flex;justify-content:space-between;font-size:12px;padding:5px 12px;border-bottom:1px solid var(--border);color:var(--soft)}
 .ex-set-row:last-child{border-bottom:none}
 .ex-set-row .wt{color:var(--teal);font-weight:700}
+.ex-set-row .hyrox-val{color:var(--hyrox);font-weight:700}
+
+/* HYROX BADGE */
+.badge-hyrox{display:inline-flex;align-items:center;gap:4px;background:rgba(255,107,53,.15);color:var(--hyrox);font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;letter-spacing:.5px;text-transform:uppercase;border:1px solid rgba(255,107,53,.3)}
+
+/* HYROX STATION CARDS */
+.hyrox-station{background:var(--card);border:1px solid rgba(255,107,53,.3);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start}
+.hyrox-station-info h4{font-size:13px;font-weight:700;color:var(--text)}
+.hyrox-station-info p{font-size:11px;color:var(--muted);margin-top:2px}
+.hyrox-station-meta{text-align:right}
+.hyrox-station-meta .dist{font-size:16px;font-weight:800;color:var(--hyrox)}
+.hyrox-station-meta .reps{font-size:11px;color:var(--muted)}
 
 /* HISTORY */
 .sess-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:10px;flex-shrink:0}
@@ -155,16 +177,17 @@ textarea{resize:none;line-height:1.5}
 .sess-info p{font-size:12px;color:var(--muted);margin-top:2px}
 .sess-chips{display:flex;flex-wrap:wrap;gap:5px;padding:0 14px 10px}
 .chip{background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:3px 8px;font-size:11px;color:var(--soft)}
+.chip.hyrox-chip{border-color:rgba(255,107,53,.4);color:var(--hyrox)}
 .sess-detail{padding:0 14px 14px;display:none}
 .sess-detail.open{display:block}
 .hist-ex-group{margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:8px}
 .hist-ex-group:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
-.hist-ex-name{font-size:13px;font-weight:700;margin-bottom:4px}
+.hist-ex-name{font-size:13px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px}
 .hist-set-line{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);padding:2px 0}
 .expand-icon{font-size:18px;color:var(--muted);transition:transform .2s;flex-shrink:0}
 .expand-icon.open{transform:rotate(180deg)}
 
-/* ─── MY PLAN ────────────────────────────────────────────────── */
+/* MY PLAN */
 .plan-banner{background:linear-gradient(135deg,rgba(155,93,229,.2),rgba(0,180,216,.1));border:1px solid rgba(155,93,229,.3);border-radius:var(--radius);padding:16px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
 .plan-banner-text h3{font-size:16px;font-weight:800}
 .plan-banner-text p{font-size:12px;color:var(--soft);margin-top:2px}
@@ -177,20 +200,15 @@ textarea{resize:none;line-height:1.5}
 .plan-day-body.open{display:block}
 .plan-ex-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
 .plan-ex-row:last-child{border-bottom:none}
-.plan-ex-name{font-weight:600}
+.plan-ex-name{font-weight:600;display:flex;align-items:center;gap:6px}
 .plan-ex-detail{font-size:12px;color:var(--muted);margin-top:2px}
-.plan-start-btn{background:var(--red);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;padding:8px 14px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.plan-start-btn{background:var(--red);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;padding:7px 12px;cursor:pointer;font-family:inherit;white-space:nowrap}
 .plan-start-btn:active{opacity:.8}
 .day-pill{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border);font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;flex-shrink:0;transition:all .2s}
 .day-pill.sel{background:var(--red);border-color:var(--red);color:#fff}
 .day-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .prog-ex-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px}
 .prog-ex-head{display:flex;justify-content:space-between;align-items:center}
-.prog-ex-name{font-size:13px;font-weight:700}
-.prog-set-grid{display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:6px;margin-top:8px;align-items:center}
-.prog-set-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;text-align:center}
-.prog-set-val{font-size:12px;font-weight:600;color:var(--soft);text-align:center}
-.prog-set-num{font-size:11px;font-weight:700;color:var(--muted)}
 
 /* METRICS */
 .metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
@@ -237,17 +255,16 @@ textarea{resize:none;line-height:1.5}
 .typing-dots span:nth-child(3){animation-delay:.3s}
 @keyframes dot{0%,80%,100%{transform:scale(.7);opacity:.5}40%{transform:scale(1);opacity:1}}
 
-/* OVERLAY / MODAL */
+/* OVERLAY */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .overlay.show{display:flex}
 .modal{background:var(--card);border-radius:20px 20px 0 0;padding:20px 20px calc(20px + var(--safe-bottom));width:100%;max-width:480px;max-height:88vh;overflow-y:auto;animation:slideUp .25s ease}
 @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
 .modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px}
-.modal-title{font-size:18px;font-weight:800;margin-bottom:16px}
+.modal-title{font-size:18px;font-weight:800;margin-bottom:4px}
+.modal-sub{font-size:12px;color:var(--muted);margin-bottom:16px}
 .modal-actions{display:flex;gap:10px;margin-top:16px}
 .modal-actions .btn{flex:1}
-
-/* CONFIRM DIALOG */
 .confirm-box{background:var(--card);border-radius:16px;padding:24px;width:90%;max-width:320px;text-align:center;animation:slideUp .2s ease}
 .confirm-box h3{font-size:16px;font-weight:700;margin-bottom:8px}
 .confirm-box p{font-size:13px;color:var(--soft);margin-bottom:20px;line-height:1.5}
@@ -260,7 +277,7 @@ textarea{resize:none;line-height:1.5}
 <body>
 <div id="app">
 
-<!-- ── AUTH ─────────────────────────────────────────────────── -->
+<!-- AUTH -->
 <div id="auth-screen" class="screen active">
   <div class="auth-logo"><h1>FORMD</h1><p>AI Gym Tracker</p></div>
   <div class="auth-card">
@@ -284,7 +301,7 @@ textarea{resize:none;line-height:1.5}
   </div>
 </div>
 
-<!-- ── MAIN ─────────────────────────────────────────────────── -->
+<!-- MAIN -->
 <div id="main-screen" class="screen">
   <div class="topbar">
     <div class="topbar-title">F<span>O</span>RMD</div>
@@ -296,7 +313,7 @@ textarea{resize:none;line-height:1.5}
 
   <div class="pages-wrap">
 
-    <!-- LOG ──────────────────────────────────────────────────── -->
+    <!-- LOG -->
     <div class="page active" id="page-log">
       <div class="card">
         <div class="card-title">Session Details</div>
@@ -307,29 +324,37 @@ textarea{resize:none;line-height:1.5}
               <select id="session-type">
                 <option>Push Day</option><option>Pull Day</option><option>Leg Day</option>
                 <option>Full Body</option><option>Upper Body</option><option>Lower Body</option>
-                <option>Cardio</option><option>Core</option><option>Custom</option>
+                <option>Cardio</option><option>Core</option>
+                <option>Hyrox Training</option><option>Hyrox Race Simulation</option>
+                <option>Custom</option>
               </select>
             </div>
-            <div class="form-group">
-              <label class="form-label">Date</label>
-              <input type="date" id="session-date">
-            </div>
+            <div class="form-group"><label class="form-label">Date</label><input type="date" id="session-date"></div>
           </div>
           <div class="row2">
-            <div class="form-group">
-              <label class="form-label">Weight unit</label>
+            <div class="form-group"><label class="form-label">Weight unit</label>
               <select id="global-unit"><option value="kg">kg</option><option value="lbs">lbs</option></select>
             </div>
-            <div class="form-group" style="justify-content:flex-end">
-              <label class="form-label">Quick load</label>
+            <div class="form-group" style="justify-content:flex-end"><label class="form-label">Quick load</label>
               <button class="btn-sm" onclick="openLoadPlanModal()" style="width:100%">Load from My Plan</button>
             </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">Session notes</label>
+          <div class="form-group"><label class="form-label">Session notes</label>
             <textarea id="session-notes" rows="2" placeholder="How are you feeling today?"></textarea>
           </div>
         </div>
+      </div>
+
+      <!-- HYROX QUICK LOG BANNER -->
+      <div id="hyrox-quick-banner" style="display:none" class="card" style="border-color:rgba(255,107,53,.4)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div>
+            <div style="font-size:14px;font-weight:800;color:var(--hyrox)">Hyrox Quick Log</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">Tap a station to log it</div>
+          </div>
+          <span class="badge-hyrox">HYROX</span>
+        </div>
+        <div id="hyrox-stations-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
       </div>
 
       <div class="card">
@@ -346,19 +371,30 @@ textarea{resize:none;line-height:1.5}
               <div class="ac-list" id="ac-list"></div>
             </div>
           </div>
+
+          <!-- Metric type selector -->
+          <div>
+            <label class="form-label" style="margin-bottom:6px">Tracking type</label>
+            <div class="metric-type-tabs">
+              <button class="mt-tab active" onclick="setMetricType('strength',this)">💪 Strength</button>
+              <button class="mt-tab" onclick="setMetricType('cardio',this)">🏃 Cardio / Distance</button>
+              <button class="mt-tab" onclick="setMetricType('hyrox',this)">🔥 Hyrox</button>
+            </div>
+          </div>
+
+          <!-- Set builder container -->
           <div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-              <label class="form-label">Sets</label>
+              <label class="form-label" id="sets-label">Sets</label>
               <div style="display:flex;gap:6px">
                 <button class="btn-sm" onclick="addSet()">+ Add set</button>
                 <button class="btn-sm" onclick="dupSet()">Duplicate</button>
               </div>
             </div>
-            <div class="set-header-row">
-              <span>#</span><span>Reps</span><span>Weight</span><span>Notes</span><span></span>
-            </div>
+            <div id="set-column-headers"></div>
             <div id="sets-container"></div>
           </div>
+
           <button class="btn btn-outline" onclick="addExercise()">
             <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" fill="none" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
             Add to session
@@ -378,14 +414,14 @@ textarea{resize:none;line-height:1.5}
       <div class="page-end"></div>
     </div>
 
-    <!-- MY PLAN ──────────────────────────────────────────────── -->
+    <!-- MY PLAN -->
     <div class="page" id="page-plan">
       <div id="plan-header-area"></div>
       <div id="plan-list-area"></div>
       <div class="page-end"></div>
     </div>
 
-    <!-- HISTORY ──────────────────────────────────────────────── -->
+    <!-- HISTORY -->
     <div class="page" id="page-history">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
         <div style="font-size:20px;font-weight:800">History</div>
@@ -395,7 +431,7 @@ textarea{resize:none;line-height:1.5}
       <div class="page-end"></div>
     </div>
 
-    <!-- BODY METRICS ─────────────────────────────────────────── -->
+    <!-- BODY METRICS -->
     <div class="page" id="page-metrics">
       <div style="font-size:20px;font-weight:800;flex-shrink:0">Body Metrics</div>
       <div class="card">
@@ -426,7 +462,7 @@ textarea{resize:none;line-height:1.5}
       <div class="page-end"></div>
     </div>
 
-    <!-- MILESTONES ───────────────────────────────────────────── -->
+    <!-- MILESTONES -->
     <div class="page" id="page-milestones">
       <div style="font-size:20px;font-weight:800;flex-shrink:0">Milestones</div>
       <div class="card">
@@ -436,12 +472,13 @@ textarea{resize:none;line-height:1.5}
             <select id="ms-type">
               <option value="🏆 Personal Best">🏆 Personal Best</option>
               <option value="💪 Strength Milestone">💪 Strength Milestone</option>
+              <option value="🔥 Hyrox PB">🔥 Hyrox PB</option>
               <option value="⚖️ Weight Goal">⚖️ Weight Goal</option>
               <option value="🎯 Consistency Win">🎯 Consistency Win</option>
               <option value="📝 General Note">📝 General Note</option>
             </select>
           </div>
-          <div class="form-group"><label class="form-label">Title</label><input type="text" id="ms-title" placeholder="e.g. First 100kg bench!"></div>
+          <div class="form-group"><label class="form-label">Title</label><input type="text" id="ms-title" placeholder="e.g. Sub-60 Hyrox finish!"></div>
           <div class="form-group"><label class="form-label">Details</label><textarea id="ms-notes" rows="3" placeholder="How it felt, what clicked…"></textarea></div>
           <button class="btn btn-red" onclick="saveMilestone()">Save milestone</button>
         </div>
@@ -453,7 +490,7 @@ textarea{resize:none;line-height:1.5}
       <div class="page-end"></div>
     </div>
 
-    <!-- STATS ────────────────────────────────────────────────── -->
+    <!-- STATS -->
     <div class="page" id="page-stats">
       <div style="font-size:20px;font-weight:800;flex-shrink:0">Stats</div>
       <div class="stats-grid" id="stats-summary"></div>
@@ -463,7 +500,7 @@ textarea{resize:none;line-height:1.5}
       <div class="page-end"></div>
     </div>
 
-    <!-- AI PLAN ──────────────────────────────────────────────── -->
+    <!-- AI PLAN -->
     <div class="page" id="page-ai">
       <div style="font-size:20px;font-weight:800;flex-shrink:0">AI Plan Builder</div>
       <div class="card">
@@ -474,6 +511,7 @@ textarea{resize:none;line-height:1.5}
           <div class="goal-chip" onclick="selectGoal(this)">Strength Gains</div>
           <div class="goal-chip" onclick="selectGoal(this)">Body Recomp</div>
           <div class="goal-chip" onclick="selectGoal(this)">Endurance</div>
+          <div class="goal-chip" onclick="selectGoal(this)">Hyrox Competition</div>
           <div class="goal-chip" onclick="selectGoal(this)">Athletic Performance</div>
         </div>
       </div>
@@ -492,8 +530,11 @@ textarea{resize:none;line-height:1.5}
               <select id="ai-level"><option>Beginner</option><option selected>Intermediate</option><option>Advanced</option></select>
             </div>
           </div>
-          <div class="form-group"><label class="form-label">Limitations</label><input type="text" id="ai-limits" placeholder="e.g. bad knees, no barbells…"></div>
-          <div class="form-group"><label class="form-label">Specific request</label><textarea id="ai-custom" rows="2" placeholder="e.g. 4-day push/pull split…"></textarea></div>
+          <div class="form-group"><label class="form-label">Limitations or preferences</label>
+            <input type="text" id="ai-limits" placeholder="e.g. bad knees, targeting Hyrox Open…"></div>
+          <div class="form-group"><label class="form-label">Specific request</label>
+            <textarea id="ai-custom" rows="2" placeholder="e.g. Hyrox 12-week prep, 4-day split…"></textarea>
+          </div>
         </div>
       </div>
       <button class="btn btn-red" id="ai-gen-btn" onclick="generatePlan()">
@@ -543,7 +584,6 @@ textarea{resize:none;line-height:1.5}
     </button>
   </nav>
 </div>
-
 </div><!-- #app -->
 
 <!-- SIGN OUT CONFIRM -->
@@ -558,14 +598,19 @@ textarea{resize:none;line-height:1.5}
   </div>
 </div>
 
-<!-- CREATE PLAN MODAL -->
+<!-- CREATE / EDIT PLAN MODAL -->
 <div class="overlay" id="create-plan-overlay">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title" id="plan-modal-title">Create Training Program</div>
+    <div class="modal-sub">Set your schedule, then add workouts to each day</div>
     <div style="display:flex;flex-direction:column;gap:12px">
-      <div class="form-group"><label class="form-label">Program name</label><input type="text" id="plan-name" placeholder="e.g. Push Pull Legs, 5-day Split…"></div>
-      <div class="form-group"><label class="form-label">Description (optional)</label><textarea id="plan-desc" rows="2" placeholder="Goal, duration, notes…"></textarea></div>
+      <div class="form-group"><label class="form-label">Program name</label>
+        <input type="text" id="plan-name" placeholder="e.g. Hyrox 12-Week Prep, PPL Split…">
+      </div>
+      <div class="form-group"><label class="form-label">Description (optional)</label>
+        <textarea id="plan-desc" rows="2" placeholder="Goal, duration, notes…"></textarea>
+      </div>
       <div class="form-group">
         <label class="form-label">Training days</label>
         <p style="font-size:12px;color:var(--muted);margin-bottom:6px">Select which days of the week you train</p>
@@ -587,18 +632,21 @@ textarea{resize:none;line-height:1.5}
   </div>
 </div>
 
-<!-- ADD WORKOUT DAY MODAL -->
+<!-- ADD DAY MODAL -->
 <div class="overlay" id="add-day-overlay">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title" id="add-day-title">Add Workout</div>
+    <div class="modal-sub" id="add-day-sub"></div>
     <div style="display:flex;flex-direction:column;gap:12px">
-      <div class="form-group"><label class="form-label">Day</label><input type="text" id="day-label" placeholder="e.g. Monday — Push Day" readonly style="background:var(--card2)"></div>
-      <div class="form-group"><label class="form-label">Workout type</label>
+      <div class="form-group">
+        <label class="form-label">Workout type</label>
         <select id="day-type">
           <option>Push Day</option><option>Pull Day</option><option>Leg Day</option>
           <option>Full Body</option><option>Upper Body</option><option>Lower Body</option>
-          <option>Cardio</option><option>Core</option><option>Rest Day</option><option>Custom</option>
+          <option>Cardio</option><option>Core</option>
+          <option>Hyrox Training</option><option>Hyrox Race Simulation</option>
+          <option>Rest Day</option><option>Custom</option>
         </select>
       </div>
       <div>
@@ -616,7 +664,7 @@ textarea{resize:none;line-height:1.5}
   </div>
 </div>
 
-<!-- LOAD PLAN MODAL (for log page) -->
+<!-- LOAD PLAN MODAL -->
 <div class="overlay" id="load-plan-overlay">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -637,13 +685,33 @@ textarea{resize:none;line-height:1.5}
 const SUPABASE_URL = 'https://adwydtcnczltiwqjnnts.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3lkdGNuY3psdGl3cWpubnRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNzc0NjIsImV4cCI6MjA5Mzc1MzQ2Mn0.zDGaI9cfhLxmfZvIBFzz_q3uqum_9R5DiUixaWKZW1c';
 
+// ── HYROX STATIONS ───────────────────────────────────────────
+// Official Hyrox race format: 8 x 1km runs + 8 functional stations
+const HYROX_STATIONS = [
+  { name:'SkiErg',           dist:'1000m', reps:null,  note:'1000m on SkiErg',          icon:'⛷️' },
+  { name:'Sled Push',        dist:'50m',   reps:null,  note:'50m sled push',             icon:'🛷' },
+  { name:'Sled Pull',        dist:'50m',   reps:null,  note:'50m sled pull',             icon:'💪' },
+  { name:'Burpee Broad Jump',dist:'80m',   reps:null,  note:'80m burpee broad jumps',    icon:'🏋️' },
+  { name:'Rowing',           dist:'1000m', reps:null,  note:'1000m on rowing machine',   icon:'🚣' },
+  { name:'Farmers Carry',    dist:'200m',  reps:null,  note:'200m farmers carry',        icon:'🏃' },
+  { name:'Sandbag Lunges',   dist:'100m',  reps:null,  note:'100m sandbag lunges',       icon:'🎽' },
+  { name:'Wall Balls',       dist:null,    reps:'100', note:'100 wall ball shots (9kg)', icon:'🏀' },
+  { name:'Hyrox 1km Run',    dist:'1000m', reps:null,  note:'1km run segment',           icon:'🏃' },
+];
+
+// All running distance options
+const DIST_OPTIONS = ['50m','80m','100m','150m','200m','400m','500m','800m','1000m','1500m','2000m','3000m','5000m','10000m'];
+const TIME_FORMATS = ['sec','min:sec','hh:mm:ss'];
+
 // ── EXERCISE DATABASE ────────────────────────────────────────
 const EX_DB=[
+  // Chest
   {n:'Barbell Bench Press',g:'Chest'},{n:'Dumbbell Bench Press',g:'Chest'},{n:'Incline Barbell Press',g:'Chest'},
   {n:'Incline Dumbbell Press',g:'Chest'},{n:'Decline Bench Press',g:'Chest'},{n:'Cable Chest Fly',g:'Chest'},
   {n:'Dumbbell Fly',g:'Chest'},{n:'Pec Deck Machine',g:'Chest'},{n:'Push-ups',g:'Chest'},
   {n:'Wide Push-ups',g:'Chest'},{n:'Diamond Push-ups',g:'Chest'},{n:'Dips',g:'Chest'},
   {n:'Cable Crossover',g:'Chest'},{n:'Machine Chest Press',g:'Chest'},{n:'Smith Machine Bench Press',g:'Chest'},
+  // Back
   {n:'Barbell Row',g:'Back'},{n:'Dumbbell Row',g:'Back'},{n:'T-Bar Row',g:'Back'},
   {n:'Seated Cable Row',g:'Back'},{n:'Lat Pulldown',g:'Back'},{n:'Wide Grip Lat Pulldown',g:'Back'},
   {n:'Close Grip Lat Pulldown',g:'Back'},{n:'Pull-ups',g:'Back'},{n:'Chin-ups',g:'Back'},
@@ -651,50 +719,342 @@ const EX_DB=[
   {n:'Sumo Deadlift',g:'Back'},{n:'Rack Pull',g:'Back'},{n:'Face Pulls',g:'Back'},
   {n:'Seated Machine Row',g:'Back'},{n:'Hyperextension',g:'Back'},{n:'Barbell Shrug',g:'Back'},
   {n:'Dumbbell Shrug',g:'Back'},{n:'Meadows Row',g:'Back'},
+  // Shoulders
   {n:'Overhead Press',g:'Shoulders'},{n:'Dumbbell Shoulder Press',g:'Shoulders'},{n:'Arnold Press',g:'Shoulders'},
   {n:'Lateral Raises',g:'Shoulders'},{n:'Cable Lateral Raise',g:'Shoulders'},{n:'Front Raise',g:'Shoulders'},
   {n:'Rear Delt Fly',g:'Shoulders'},{n:'Face Pull',g:'Shoulders'},{n:'Upright Row',g:'Shoulders'},
   {n:'Machine Shoulder Press',g:'Shoulders'},{n:'Push Press',g:'Shoulders'},{n:'Reverse Pec Deck',g:'Shoulders'},
+  // Biceps
   {n:'Barbell Curl',g:'Biceps'},{n:'Dumbbell Curl',g:'Biceps'},{n:'Hammer Curl',g:'Biceps'},
   {n:'Incline Dumbbell Curl',g:'Biceps'},{n:'Preacher Curl',g:'Biceps'},{n:'Cable Curl',g:'Biceps'},
   {n:'EZ Bar Curl',g:'Biceps'},{n:'Concentration Curl',g:'Biceps'},{n:'Spider Curl',g:'Biceps'},
-  {n:'Zottman Curl',g:'Biceps'},{n:'Reverse Curl',g:'Biceps'},{n:'Machine Curl',g:'Biceps'},
+  {n:'Machine Curl',g:'Biceps'},
+  // Triceps
   {n:'Tricep Pushdown',g:'Triceps'},{n:'Overhead Tricep Extension',g:'Triceps'},{n:'Skull Crushers',g:'Triceps'},
   {n:'Close Grip Bench Press',g:'Triceps'},{n:'Tricep Dips',g:'Triceps'},{n:'Cable Overhead Extension',g:'Triceps'},
   {n:'Tricep Kickback',g:'Triceps'},{n:'Machine Tricep Extension',g:'Triceps'},
+  // Quads / Legs
   {n:'Barbell Squat',g:'Quads'},{n:'Front Squat',g:'Quads'},{n:'Hack Squat',g:'Quads'},
   {n:'Leg Press',g:'Quads'},{n:'Goblet Squat',g:'Quads'},{n:'Bulgarian Split Squat',g:'Quads'},
   {n:'Walking Lunges',g:'Quads'},{n:'Reverse Lunges',g:'Quads'},{n:'Leg Extension',g:'Quads'},
-  {n:'Smith Machine Squat',g:'Quads'},{n:'Box Squat',g:'Quads'},{n:'Step Ups',g:'Quads'},{n:'Squats (BW)',g:'Quads'},
+  {n:'Smith Machine Squat',g:'Quads'},{n:'Step Ups',g:'Quads'},{n:'Squats (BW)',g:'Quads'},
   {n:'Romanian Deadlift',g:'Hamstrings'},{n:'Leg Curl',g:'Hamstrings'},{n:'Seated Leg Curl',g:'Hamstrings'},
   {n:'Nordic Curl',g:'Hamstrings'},{n:'Good Morning',g:'Hamstrings'},
   {n:'Glute Bridge',g:'Glutes'},{n:'Hip Thrust',g:'Glutes'},{n:'Cable Kickback',g:'Glutes'},
-  {n:'Sumo Squat',g:'Glutes'},{n:'Abduction Machine',g:'Glutes'},
+  {n:'Abduction Machine',g:'Glutes'},
   {n:'Calf Raise',g:'Calves'},{n:'Seated Calf Raise',g:'Calves'},{n:'Donkey Calf Raise',g:'Calves'},
+  // Core
   {n:'Plank',g:'Core'},{n:'Side Plank',g:'Core'},{n:'Hanging Leg Raises',g:'Core'},
-  {n:'Hanging Knee Raises',g:'Core'},{n:'Cable Crunches',g:'Core'},{n:'Ab Wheel Rollout',g:'Core'},
-  {n:'Russian Twists',g:'Core'},{n:'V-Ups',g:'Core'},{n:'Bicycle Crunches',g:'Core'},
-  {n:'Dragon Flag',g:'Core'},{n:'Pallof Press',g:'Core'},{n:'Mountain Climbers',g:'Core'},
+  {n:'Cable Crunches',g:'Core'},{n:'Ab Wheel Rollout',g:'Core'},{n:'Russian Twists',g:'Core'},
+  {n:'V-Ups',g:'Core'},{n:'Bicycle Crunches',g:'Core'},{n:'Dragon Flag',g:'Core'},
+  {n:'Pallof Press',g:'Core'},{n:'Mountain Climbers',g:'Core'},
+  // Cardio
   {n:'Incline Treadmill Walk',g:'Cardio'},{n:'Treadmill Run',g:'Cardio'},{n:'Stationary Bike',g:'Cardio'},
   {n:'Rowing Machine',g:'Cardio'},{n:'Stair Master',g:'Cardio'},{n:'Jump Rope',g:'Cardio'},
-  {n:'Burpees',g:'Cardio'},{n:'Box Jumps',g:'Cardio'},{n:'Battle Ropes',g:'Cardio'},{n:'Assault Bike',g:'Cardio'},
+  {n:'Assault Bike',g:'Cardio'},{n:'Elliptical',g:'Cardio'},
+  // Full Body
   {n:'Kettlebell Swing',g:'Full Body'},{n:'Thruster',g:'Full Body'},{n:'Power Clean',g:'Full Body'},
-  {n:'Turkish Get-Up',g:'Full Body'},{n:'Clean and Press',g:'Full Body'},
+  {n:'Turkish Get-Up',g:'Full Body'},{n:'Clean and Press',g:'Full Body'},{n:'Burpees',g:'Full Body'},
+  {n:'Box Jumps',g:'Full Body'},{n:'Battle Ropes',g:'Full Body'},
+  // Hyrox
+  {n:'SkiErg',g:'Hyrox',h:true},{n:'Sled Push',g:'Hyrox',h:true},{n:'Sled Pull',g:'Hyrox',h:true},
+  {n:'Burpee Broad Jump',g:'Hyrox',h:true},{n:'Rowing',g:'Hyrox',h:true},
+  {n:'Farmers Carry',g:'Hyrox',h:true},{n:'Sandbag Lunges',g:'Hyrox',h:true},
+  {n:'Wall Balls',g:'Hyrox',h:true},{n:'Hyrox 1km Run',g:'Hyrox',h:true},
+  {n:'Hyrox Race Simulation',g:'Hyrox',h:true},{n:'Hyrox Full Race',g:'Hyrox',h:true},
+  // Hyrox training
+  {n:'Box Step-Up',g:'Hyrox Training'},{n:'Weighted Step-Up',g:'Hyrox Training'},
+  {n:'Sandbag Carry',g:'Hyrox Training'},{n:'Sandbag Clean',g:'Hyrox Training'},
+  {n:'Wall Ball Shot',g:'Hyrox Training'},{n:'Sled Push (Training)',g:'Hyrox Training'},
+  {n:'Ski Erg Intervals',g:'Hyrox Training'},{n:'Row Intervals',g:'Hyrox Training'},
+  {n:'Farmer Walk',g:'Hyrox Training'},{n:'Zone 2 Run',g:'Cardio'},{n:'Tempo Run',g:'Cardio'},
+  {n:'Interval Run',g:'Cardio'},{n:'Long Run',g:'Cardio'},
 ];
 
 // ── INIT ─────────────────────────────────────────────────────
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let currentUser=null, currentPage='log', selectedGoal='Fat Loss';
 let currentExGroups=[], currentSets=[];
-// Plan builder state
-let planDaysSelected=[], planExBuilder=[], editingPlanId=null, editingDayKey=null;
-// Plans cache
-let plansCache=[];
+let currentMetricType='strength'; // 'strength' | 'cardio' | 'hyrox'
+let planDaysSelected=[], planExBuilder=[], editingPlanId=null, editingPlanIndex=null, editingDayKey=null;
 
 function today(){ return new Date().toISOString().split('T')[0]; }
 document.getElementById('session-date').value=today();
 document.getElementById('metric-date').value=today();
 addSet();
+renderHyroxBanner();
+
+// Watch session type to show/hide hyrox banner
+document.getElementById('session-type').addEventListener('change', renderHyroxBanner);
+
+// ── HYROX BANNER ─────────────────────────────────────────────
+function renderHyroxBanner(){
+  const type = document.getElementById('session-type').value;
+  const isHyrox = type.toLowerCase().includes('hyrox');
+  const banner = document.getElementById('hyrox-quick-banner');
+  banner.style.display = isHyrox ? 'block' : 'none';
+  if(!isHyrox) return;
+  const grid = document.getElementById('hyrox-stations-grid');
+  grid.innerHTML = HYROX_STATIONS.map(s=>`
+    <button onclick="quickLogHyrox('${s.name.replace(/'/g,"\\'")}','${s.dist||s.reps+' reps'}')"
+      style="background:var(--surface);border:1px solid rgba(255,107,53,.3);border-radius:8px;padding:10px 8px;cursor:pointer;text-align:left;font-family:inherit;transition:background .15s">
+      <div style="font-size:16px;margin-bottom:4px">${s.icon}</div>
+      <div style="font-size:12px;font-weight:700;color:var(--text)">${s.name}</div>
+      <div style="font-size:11px;color:var(--hyrox);margin-top:2px">${s.dist||s.reps}</div>
+    </button>`).join('');
+}
+
+function quickLogHyrox(name, distOrReps){
+  document.getElementById('ex-name').value = name;
+  setMetricType('hyrox', document.querySelector('.mt-tab:nth-child(3)'));
+  // scroll to add exercise form
+  document.getElementById('ex-name').scrollIntoView({behavior:'smooth', block:'center'});
+  toast('Tap "+ Add to session" after filling in your time/distance');
+}
+
+// ── METRIC TYPE ───────────────────────────────────────────────
+function setMetricType(type, btn){
+  currentMetricType = type;
+  document.querySelectorAll('.mt-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  currentSets = [];
+  addSet();
+}
+
+// ── AUTOCOMPLETE ──────────────────────────────────────────────
+function onExInput(val){
+  const list=document.getElementById('ac-list');
+  if(!val){list.classList.remove('show');return;}
+  const q=val.toLowerCase();
+  const matches=EX_DB.filter(e=>e.n.toLowerCase().includes(q)).slice(0,10);
+  if(!matches.length){list.classList.remove('show');return;}
+  list.innerHTML=matches.map(e=>`
+    <div class="ac-item" onclick="pickExercise('${e.n.replace(/'/g,"\\'")}','${e.g}','${e.h?'hyrox':''}')">
+      <span class="ac-n">${e.n.replace(new RegExp(`(${val.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi'),'<span class="ac-hi">$1</span>')}
+        ${e.h?'<span class="ac-hyrox">HYROX</span>':''}
+      </span>
+      <span class="ac-g">${e.g}</span>
+    </div>`).join('');
+  list.classList.add('show');
+}
+
+function pickExercise(name, group, isHyrox){
+  document.getElementById('ex-name').value=name;
+  hideAC();
+  // Auto-switch metric type based on exercise group
+  if(isHyrox === 'hyrox'){
+    const btn = document.querySelector('.mt-tab:nth-child(3)');
+    setMetricType('hyrox', btn);
+  } else if(['Cardio'].includes(group)){
+    const btn = document.querySelector('.mt-tab:nth-child(2)');
+    setMetricType('cardio', btn);
+  }
+}
+function hideAC(){ document.getElementById('ac-list').classList.remove('show'); }
+document.addEventListener('click',e=>{ if(!e.target.closest('.ac-wrap')) hideAC(); });
+
+// ── SET BUILDER ───────────────────────────────────────────────
+function addSet(){
+  const last = currentSets.length ? currentSets[currentSets.length-1] : null;
+  if(currentMetricType === 'strength'){
+    currentSets.push({reps:last?.reps||'', weight:last?.weight||'', unit:'kg', notes:''});
+  } else if(currentMetricType === 'cardio'){
+    currentSets.push({distance:last?.distance||'', distUnit:last?.distUnit||'m', time:last?.time||'', notes:''});
+  } else { // hyrox
+    currentSets.push({distance:last?.distance||'', distUnit:last?.distUnit||'m', time:last?.time||'', weight:last?.weight||'', notes:''});
+  }
+  renderSets();
+}
+
+function dupSet(){
+  if(!currentSets.length){toast('Add a set first',true);return;}
+  currentSets.push({...currentSets[currentSets.length-1]});
+  renderSets();
+}
+function removeSet(i){ currentSets.splice(i,1); renderSets(); }
+
+function renderSets(){
+  const c=document.getElementById('sets-container');
+  const hdr=document.getElementById('set-column-headers');
+  const lbl=document.getElementById('sets-label');
+
+  if(currentMetricType==='strength'){
+    lbl.textContent='Sets';
+    hdr.className='set-header-row strength-hdr';
+    hdr.innerHTML='<span>#</span><span>Reps</span><span>Weight</span><span>Unit</span><span>Notes</span><span></span>';
+    c.innerHTML=currentSets.map((s,i)=>`
+      <div class="set-row strength-row">
+        <div class="set-num">${i+1}</div>
+        <input class="set-inp" type="text" placeholder="10" value="${s.reps||''}" oninput="currentSets[${i}].reps=this.value" inputmode="numeric">
+        <input class="set-inp" type="text" placeholder="80" value="${s.weight||''}" oninput="currentSets[${i}].weight=this.value" inputmode="decimal">
+        <select class="set-inp" style="padding:5px 4px;font-size:12px" onchange="currentSets[${i}].unit=this.value">
+          <option value="kg" ${s.unit==='kg'?'selected':''}>kg</option>
+          <option value="lbs" ${s.unit==='lbs'?'selected':''}>lbs</option>
+          <option value="BW" ${s.unit==='BW'?'selected':''}>BW</option>
+        </select>
+        <input class="set-inp" type="text" placeholder="note" value="${s.notes||''}" oninput="currentSets[${i}].notes=this.value">
+        <button class="set-del" onclick="removeSet(${i})">×</button>
+      </div>`).join('');
+
+  } else if(currentMetricType==='cardio'){
+    lbl.textContent='Intervals / Laps';
+    hdr.className='set-header-row cardio-hdr';
+    hdr.innerHTML='<span>#</span><span>Distance</span><span>Unit</span><span>Time</span><span></span>';
+    c.innerHTML=currentSets.map((s,i)=>`
+      <div class="set-row cardio-row">
+        <div class="set-num">${i+1}</div>
+        <input class="set-inp" type="text" placeholder="1000" value="${s.distance||''}" oninput="currentSets[${i}].distance=this.value" inputmode="decimal">
+        <select class="set-inp" style="padding:5px 4px;font-size:12px" onchange="currentSets[${i}].distUnit=this.value">
+          <option value="m" ${s.distUnit==='m'?'selected':''}>m</option>
+          <option value="km" ${s.distUnit==='km'?'selected':''}>km</option>
+          <option value="mi" ${s.distUnit==='mi'?'selected':''}>mi</option>
+        </select>
+        <input class="set-inp" type="text" placeholder="mm:ss" value="${s.time||''}" oninput="currentSets[${i}].time=this.value">
+        <button class="set-del" onclick="removeSet(${i})">×</button>
+      </div>`).join('');
+
+  } else { // hyrox
+    lbl.textContent='Station attempts';
+    hdr.className='set-header-row strength-hdr';
+    hdr.innerHTML='<span>#</span><span>Dist/Reps</span><span>Load (kg)</span><span>Time</span><span>Notes</span><span></span>';
+    c.innerHTML=currentSets.map((s,i)=>`
+      <div class="set-row strength-row">
+        <div class="set-num">${i+1}</div>
+        <input class="set-inp" type="text" placeholder="1000m / 100" value="${s.distance||''}" oninput="currentSets[${i}].distance=this.value">
+        <input class="set-inp" type="text" placeholder="20" value="${s.weight||''}" oninput="currentSets[${i}].weight=this.value" inputmode="decimal">
+        <input class="set-inp" type="text" placeholder="mm:ss" value="${s.time||''}" oninput="currentSets[${i}].time=this.value">
+        <input class="set-inp" type="text" placeholder="note" value="${s.notes||''}" oninput="currentSets[${i}].notes=this.value">
+        <button class="set-del" onclick="removeSet(${i})">×</button>
+      </div>`).join('');
+  }
+
+  if(!currentSets.length){
+    c.innerHTML='<p style="font-size:12px;color:var(--muted);text-align:center;padding:8px 0">No sets — tap "+ Add set"</p>';
+    hdr.innerHTML='';
+  }
+}
+
+// ── ADD EXERCISE ──────────────────────────────────────────────
+function addExercise(){
+  const name=document.getElementById('ex-name').value.trim();
+  if(!name){toast('Enter an exercise name',true);return;}
+  const valid=currentSets.filter(s=>s.reps||s.weight||s.distance||s.time);
+  if(!valid.length){toast('Fill in at least one set',true);return;}
+
+  const metricType = currentMetricType;
+  const existing=currentExGroups.find(g=>g.name.toLowerCase()===name.toLowerCase());
+  const newSets = valid.map(s=>({...s, _type: metricType}));
+
+  if(existing){ existing.sets.push(...newSets); toast(`Added to ${name}`); }
+  else { currentExGroups.push({name, sets:newSets, _type:metricType}); toast(`${name} added`); }
+
+  document.getElementById('ex-name').value='';
+  currentSets=[]; addSet();
+  renderCurrentExercises();
+}
+
+function removeExGroup(i){ currentExGroups.splice(i,1); renderCurrentExercises(); }
+function removeSetFromGroup(gi,si){
+  currentExGroups[gi].sets.splice(si,1);
+  if(!currentExGroups[gi].sets.length) currentExGroups.splice(gi,1);
+  renderCurrentExercises();
+}
+
+function formatSetDisplay(s){
+  if(s._type==='cardio'){
+    return `${s.distance||'—'}${s.distUnit||'m'}${s.time?' in '+s.time:''}`;
+  } else if(s._type==='hyrox'){
+    const parts=[];
+    if(s.distance) parts.push(s.distance);
+    if(s.weight)   parts.push(s.weight+'kg load');
+    if(s.time)     parts.push(s.time);
+    if(s.notes)    parts.push(s.notes);
+    return parts.join(' · ') || '—';
+  } else {
+    return `${s.reps||'—'} reps${s.notes?' · '+s.notes:''}`;
+  }
+}
+function formatSetWeight(s){
+  if(s._type==='cardio') return s.time||'';
+  if(s._type==='hyrox')  return s.time||'';
+  return s.weight ? s.weight+(s.unit||'kg') : 'BW';
+}
+
+function renderCurrentExercises(){
+  const count=currentExGroups.length;
+  document.getElementById('ex-count-badge').textContent=count+' exercise'+(count!==1?'s':'')+' added';
+  const card=document.getElementById('cur-ex-card');
+  const saveBtn=document.getElementById('save-btn');
+  const list=document.getElementById('cur-ex-list');
+  if(!count){card.style.display='none';saveBtn.style.display='none';return;}
+  card.style.display='block'; saveBtn.style.display='flex';
+
+  list.innerHTML=currentExGroups.map((g,gi)=>{
+    const isHyrox = g._type==='hyrox';
+    const isCardio = g._type==='cardio';
+    const summary = g.sets.length+' set'+(g.sets.length!==1?'s':'');
+    const setRows=g.sets.map((s,si)=>`
+      <div class="ex-set-row">
+        <span>Set ${si+1}: ${formatSetDisplay(s)}</span>
+        <span class="${isHyrox?'hyrox-val':'wt'}">${formatSetWeight(s)}</span>
+        <button onclick="removeSetFromGroup(${gi},${si})" class="set-del" style="font-size:13px;margin-left:6px">×</button>
+      </div>`).join('');
+    return `<div class="ex-group">
+      <div class="ex-group-head">
+        <div>
+          <div class="ex-group-name">${g.name} ${isHyrox?'<span class="badge-hyrox" style="font-size:9px;padding:1px 5px">HYROX</span>':''}</div>
+          <div class="ex-group-sub">${summary}${isCardio?' · distance/time':isHyrox?' · Hyrox station':' · strength'}</div>
+        </div>
+        <button onclick="removeExGroup(${gi})" class="btn-ghost" style="color:var(--red)">Remove</button>
+      </div>
+      ${setRows}
+    </div>`;
+  }).join('');
+}
+
+// ── SAVE SESSION ──────────────────────────────────────────────
+async function saveSession(){
+  if(!currentExGroups.length){toast('Add at least one exercise',true);return;}
+  const btn=document.getElementById('save-btn');
+  btn.disabled=true; btn.innerHTML='<div class="spinner"></div> Saving…';
+
+  const {data:sess,error:sErr}=await sb.from('workout_sessions').insert({
+    user_id:currentUser.id,
+    session_type:document.getElementById('session-type').value,
+    session_date:document.getElementById('session-date').value,
+    notes:document.getElementById('session-notes').value.trim()||null
+  }).select().single();
+
+  if(sErr){toast('Error: '+sErr.message,true);btn.disabled=false;btn.innerHTML='Save workout session';return;}
+
+  const exRows=[];
+  currentExGroups.forEach(g=>g.sets.forEach((s,si)=>{
+    const row={
+      session_id:sess.id, user_id:currentUser.id, exercise_name:g.name,
+      sets:si+1, weight_unit:document.getElementById('global-unit').value,
+    };
+    if(g._type==='strength'){
+      row.reps=s.reps||null; row.weight_kg=parseFloat(s.weight)||null;
+      row.notes=s.notes||null; row.weight_unit=s.unit||'kg';
+    } else if(g._type==='cardio'){
+      row.reps=s.distance?s.distance+(s.distUnit||'m'):null;
+      row.notes=(s.time?'Time: '+s.time:'')+(s.notes?' '+s.notes:'');
+    } else { // hyrox
+      row.reps=s.distance||null;
+      row.weight_kg=parseFloat(s.weight)||null;
+      row.notes=(s.time?'Time: '+s.time:'')+(s.notes?' · '+s.notes:'');
+    }
+    exRows.push(row);
+  }));
+
+  await sb.from('exercises').insert(exRows);
+  currentExGroups=[]; currentSets=[]; addSet();
+  renderCurrentExercises();
+  document.getElementById('session-notes').value='';
+  document.getElementById('session-date').value=today();
+  btn.disabled=false; btn.innerHTML='Save workout session'; btn.style.display='none';
+  toast('Session saved! 💪');
+}
 
 // ── AUTH ─────────────────────────────────────────────────────
 sb.auth.onAuthStateChange((_e,session)=>{
@@ -709,10 +1069,8 @@ sb.auth.onAuthStateChange((_e,session)=>{
     currentUser=null;
     document.getElementById('auth-screen').classList.add('active');
     document.getElementById('main-screen').classList.remove('active');
-    currentExGroups=[]; currentSets=[];
   }
 });
-
 function switchAuthTab(tab){
   document.querySelectorAll('.auth-tab').forEach(b=>b.classList.remove('active'));
   document.querySelector(`.auth-tab[onclick*="${tab}"]`).classList.add('active');
@@ -738,14 +1096,11 @@ async function doSignup(){
   if(error){msg.textContent=error.message;msg.className='auth-msg error';}
   else{msg.textContent='Check your email to confirm, then log in.';msg.className='auth-msg success';}
 }
-function confirmSignOut(){
-  document.getElementById('signout-overlay').classList.add('show');
-}
+function confirmSignOut(){ document.getElementById('signout-overlay').classList.add('show'); }
 async function doSignOut(){
   closeOverlay('signout-overlay');
   await sb.auth.signOut();
-  currentExGroups=[]; currentSets=[];
-  addSet();
+  currentExGroups=[]; currentSets=[]; addSet();
   toast('Signed out');
 }
 
@@ -755,8 +1110,7 @@ function showPage(page){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   document.getElementById('nav-'+page).classList.add('active');
-  currentPage=page;
-  hideAC();
+  currentPage=page; hideAC();
   if(page==='history')    loadHistory();
   if(page==='metrics')    loadMetrics();
   if(page==='milestones') loadMilestones();
@@ -764,155 +1118,25 @@ function showPage(page){
   if(page==='plan')       loadMyPlan();
 }
 
-// ── TOAST ─────────────────────────────────────────────────────
 function toast(msg,isErr=false){
   const el=document.getElementById('toast');
   el.textContent=msg; el.className=(isErr?'err':'')+' show';
   setTimeout(()=>el.className='',2500);
 }
-
-// ── OVERLAY ───────────────────────────────────────────────────
 function closeOverlay(id){ document.getElementById(id).classList.remove('show'); }
 document.querySelectorAll('.overlay').forEach(ov=>{
   ov.addEventListener('click',e=>{ if(e.target===ov) ov.classList.remove('show'); });
 });
 
-// ── AUTOCOMPLETE ──────────────────────────────────────────────
-function onExInput(val){
-  const list=document.getElementById('ac-list');
-  if(!val){list.classList.remove('show');return;}
-  const q=val.toLowerCase();
-  const matches=EX_DB.filter(e=>e.n.toLowerCase().includes(q)).slice(0,8);
-  if(!matches.length){list.classList.remove('show');return;}
-  list.innerHTML=matches.map(e=>{
-    const hi=e.n.replace(new RegExp(`(${val.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi'),'<span class="ac-hi">$1</span>');
-    return `<div class="ac-item" onclick="pickExercise('${e.n.replace(/'/g,"\\'")}')">
-      <span class="ac-n">${hi}</span><span class="ac-g">${e.g}</span>
-    </div>`;
-  }).join('');
-  list.classList.add('show');
-}
-function pickExercise(name){
-  document.getElementById('ex-name').value=name; hideAC();
-}
-function hideAC(){ document.getElementById('ac-list').classList.remove('show'); }
-document.addEventListener('click',e=>{ if(!e.target.closest('.ac-wrap')) hideAC(); });
-
-// ── SET BUILDER ───────────────────────────────────────────────
-function addSet(){
-  const last=currentSets.length?currentSets[currentSets.length-1]:null;
-  currentSets.push({reps:last?last.reps:'',weight:last?last.weight:'',notes:''});
-  renderSets();
-}
-function dupSet(){
-  if(!currentSets.length){toast('Add a set first',true);return;}
-  currentSets.push({...currentSets[currentSets.length-1]});
-  renderSets();
-}
-function removeSet(i){ currentSets.splice(i,1); renderSets(); }
-function renderSets(){
-  const c=document.getElementById('sets-container');
-  const unit=document.getElementById('global-unit')?.value||'kg';
-  if(!currentSets.length){
-    c.innerHTML='<p style="font-size:12px;color:var(--muted);text-align:center;padding:8px 0">No sets — tap "+ Add set"</p>';
-    return;
-  }
-  c.innerHTML=currentSets.map((s,i)=>`
-    <div class="set-row">
-      <div class="set-num">${i+1}</div>
-      <input class="set-inp" type="text" placeholder="10" value="${s.reps}" oninput="currentSets[${i}].reps=this.value" inputmode="numeric">
-      <input class="set-inp" type="text" placeholder="${unit}" value="${s.weight}" oninput="currentSets[${i}].weight=this.value" inputmode="decimal">
-      <input class="set-inp" type="text" placeholder="note" value="${s.notes}" oninput="currentSets[${i}].notes=this.value">
-      <button class="set-del" onclick="removeSet(${i})">×</button>
-    </div>`).join('');
-}
-
-// ── LOG — ADD EXERCISE ────────────────────────────────────────
-function addExercise(){
-  const name=document.getElementById('ex-name').value.trim();
-  if(!name){toast('Enter an exercise name',true);return;}
-  const valid=currentSets.filter(s=>s.reps||s.weight);
-  if(!valid.length){toast('Fill in at least one set',true);return;}
-  const existing=currentExGroups.find(g=>g.name.toLowerCase()===name.toLowerCase());
-  if(existing){ existing.sets.push(...valid.map(s=>({...s}))); toast(`Added sets to ${name}`); }
-  else { currentExGroups.push({name,sets:valid.map(s=>({...s}))}); toast(`${name} added`); }
-  document.getElementById('ex-name').value='';
-  currentSets=[]; addSet();
-  renderCurrentExercises();
-}
-function removeExGroup(i){ currentExGroups.splice(i,1); renderCurrentExercises(); }
-function removeSetFromGroup(gi,si){
-  currentExGroups[gi].sets.splice(si,1);
-  if(!currentExGroups[gi].sets.length) currentExGroups.splice(gi,1);
-  renderCurrentExercises();
-}
-function renderCurrentExercises(){
-  const count=currentExGroups.length;
-  document.getElementById('ex-count-badge').textContent=count+' exercise'+(count!==1?'s':'')+' added';
-  const card=document.getElementById('cur-ex-card');
-  const saveBtn=document.getElementById('save-btn');
-  const list=document.getElementById('cur-ex-list');
-  if(!count){card.style.display='none';saveBtn.style.display='none';return;}
-  card.style.display='block'; saveBtn.style.display='flex';
-  const unit=document.getElementById('global-unit')?.value||'kg';
-  list.innerHTML=currentExGroups.map((g,gi)=>{
-    const summary=`${g.sets.length} set${g.sets.length!==1?'s':''}`+(g.sets.some(s=>s.weight)?` · ${g.sets.map(s=>s.weight||'BW').join(', ')} ${unit}`:'');
-    const setRows=g.sets.map((s,si)=>`
-      <div class="ex-set-row">
-        <span>Set ${si+1}: ${s.reps||'—'} reps${s.notes?' · '+s.notes:''}</span>
-        <span class="wt">${s.weight?s.weight+unit:'BW'}</span>
-        <button onclick="removeSetFromGroup(${gi},${si})" class="set-del" style="font-size:13px;margin-left:6px">×</button>
-      </div>`).join('');
-    return `<div class="ex-group">
-      <div class="ex-group-head">
-        <div><div class="ex-group-name">${g.name}</div><div class="ex-group-sub">${summary}</div></div>
-        <button onclick="removeExGroup(${gi})" class="btn-ghost" style="color:var(--red)">Remove</button>
-      </div>
-      ${setRows}
-    </div>`;
-  }).join('');
-}
-
-// ── SAVE SESSION ──────────────────────────────────────────────
-async function saveSession(){
-  if(!currentExGroups.length){toast('Add at least one exercise',true);return;}
-  const btn=document.getElementById('save-btn');
-  btn.disabled=true; btn.innerHTML='<div class="spinner"></div> Saving…';
-  const {data:sess,error:sErr}=await sb.from('workout_sessions').insert({
-    user_id:currentUser.id,
-    session_type:document.getElementById('session-type').value,
-    session_date:document.getElementById('session-date').value,
-    notes:document.getElementById('session-notes').value.trim()||null
-  }).select().single();
-  if(sErr){toast('Error: '+sErr.message,true);btn.disabled=false;btn.innerHTML='Save workout session';return;}
-  const exRows=[];
-  currentExGroups.forEach(g=>g.sets.forEach((s,si)=>exRows.push({
-    session_id:sess.id, user_id:currentUser.id, exercise_name:g.name,
-    sets:si+1, reps:s.reps||null,
-    weight_kg:parseFloat(s.weight)||null,
-    weight_unit:document.getElementById('global-unit').value,
-    notes:s.notes||null
-  })));
-  await sb.from('exercises').insert(exRows);
-  currentExGroups=[]; currentSets=[]; addSet();
-  renderCurrentExercises();
-  document.getElementById('session-notes').value='';
-  document.getElementById('session-date').value=today();
-  btn.disabled=false; btn.innerHTML='Save workout session'; btn.style.display='none';
-  toast('Session saved! 💪');
-}
-
 // ── MY PLAN ───────────────────────────────────────────────────
-// Plans are stored in localStorage (JSON) — no extra DB table needed for MVP
-const PLAN_KEY='formd_plans_v1';
+const PLAN_KEY='formd_plans_v2';
 function getPlans(){ try{return JSON.parse(localStorage.getItem(PLAN_KEY))||[];}catch{return[];} }
-function savePlansLocal(plans){ localStorage.setItem(PLAN_KEY,JSON.stringify(plans)); }
+function savePlansLocal(p){ localStorage.setItem(PLAN_KEY,JSON.stringify(p)); }
 
 function loadMyPlan(){
   const plans=getPlans();
   const headerArea=document.getElementById('plan-header-area');
   const listArea=document.getElementById('plan-list-area');
-
   headerArea.innerHTML=`
     <div class="plan-banner">
       <div class="plan-banner-text">
@@ -921,77 +1145,70 @@ function loadMyPlan(){
       </div>
       <button class="btn-sm active-pill" onclick="openCreatePlan()">+ New program</button>
     </div>`;
-
   if(!plans.length){
     listArea.innerHTML=`<div class="empty-state">
-      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
-      <p>Tap "+ New program" to build your first training plan. Set your days, exercises, sets and reps, then load it straight into your log.</p>
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+      <p>Tap "+ New program" to build your training plan. Add Hyrox stations, strength sessions, or a mix.</p>
     </div>`; return;
   }
-
   listArea.innerHTML=plans.map((plan,pi)=>{
     const days=plan.days||{};
-    const dayKeys=Object.keys(days);
     const dayCards=plan.schedule.map(day=>{
-      const workout=days[day]||null;
-      const exCount=workout?.exercises?.length||0;
+      const w=days[day]||null;
+      const exCount=w?.exercises?.length||0;
+      const isHyroxDay=w?.type?.toLowerCase().includes('hyrox');
       return `
         <div class="plan-day-card" style="margin-bottom:8px">
-          <div class="plan-day-head" onclick="togglePlanDay2('pd-${pi}-${day}')">
+          <div class="plan-day-head" onclick="togglePlanDay2('pd-${pi}-${day}','ei-${pi}-${day}')">
             <div>
-              <div class="plan-day-label">${day}</div>
-              <div class="plan-day-sub">${workout?workout.type+' · '+exCount+' exercise'+(exCount!==1?'s':''):'Rest day'}</div>
+              <div class="plan-day-label">${day} ${isHyroxDay?'🔥':''}</div>
+              <div class="plan-day-sub">${w?w.type+' · '+exCount+' exercise'+(exCount!==1?'s':''):'Rest day — no workout set'}</div>
             </div>
-            <div style="display:flex;align-items:center;gap:8px">
-              ${workout?`<button class="plan-start-btn" onclick="event.stopPropagation();loadDayIntoLog(${pi},'${day}')">Log this</button>`:''}
-              <button class="btn-sm" onclick="event.stopPropagation();openAddDay(${pi},'${day}','${workout?workout.type:'Push Day'}')">Edit</button>
+            <div style="display:flex;align-items:center;gap:6px">
+              ${w?`<button class="plan-start-btn" onclick="event.stopPropagation();loadDayIntoLog(${pi},'${day}')">Log this</button>`:''}
+              <button class="btn-sm" onclick="event.stopPropagation();openAddDay(${pi},'${day}','${w?w.type:'Push Day'}')">Edit</button>
               <span class="expand-icon" id="ei-${pi}-${day}">⌄</span>
             </div>
           </div>
           <div class="plan-day-body" id="pd-${pi}-${day}">
-            ${workout&&workout.exercises.length?workout.exercises.map(ex=>`
-              <div class="plan-ex-row">
+            ${w&&w.exercises.length?w.exercises.map(ex=>{
+              const isH=ex._type==='hyrox'||EX_DB.find(e=>e.n===ex.name)?.h;
+              return `<div class="plan-ex-row">
                 <div>
-                  <div class="plan-ex-name">${ex.name}</div>
-                  <div class="plan-ex-detail">${ex.sets} sets × ${ex.reps} reps${ex.weight?' · '+ex.weight+(ex.unit||'kg'):''}${ex.notes?' · '+ex.notes:''}</div>
+                  <div class="plan-ex-name">${ex.name}${isH?'<span class="badge-hyrox" style="font-size:9px;padding:1px 5px">HYROX</span>':''}</div>
+                  <div class="plan-ex-detail">${ex.sets} sets × ${ex.reps}${ex.distance?' · '+ex.distance:''}${ex.time?' in '+ex.time:''}${ex.weight?' · '+ex.weight+'kg':''}</div>
                 </div>
-              </div>`).join(''):`<p style="font-size:12px;color:var(--muted);padding:4px 0">Rest day — no exercises</p>`}
+              </div>`;}).join(''):`<p style="font-size:12px;color:var(--muted);padding:4px 0">No exercises set — tap Edit</p>`}
           </div>
         </div>`;
     }).join('');
-
-    return `
-      <div style="margin-bottom:20px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div>
-            <div style="font-size:16px;font-weight:800">${plan.name}</div>
-            ${plan.desc?`<div style="font-size:12px;color:var(--muted);margin-top:2px">${plan.desc}</div>`:''}
-          </div>
-          <div style="display:flex;gap:6px">
-            <button class="btn-sm" onclick="editPlan(${pi})">Edit</button>
-            <button class="btn-sm" style="color:var(--red)" onclick="deletePlan(${pi})">Delete</button>
-          </div>
+    return `<div style="margin-bottom:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div>
+          <div style="font-size:16px;font-weight:800">${plan.name}</div>
+          ${plan.desc?`<div style="font-size:12px;color:var(--muted);margin-top:2px">${plan.desc}</div>`:''}
         </div>
-        ${dayCards}
-      </div>`;
+        <div style="display:flex;gap:6px">
+          <button class="btn-sm" onclick="editPlan(${pi})">Edit</button>
+          <button class="btn-sm" style="color:var(--red)" onclick="deletePlan(${pi})">Delete</button>
+        </div>
+      </div>
+      ${dayCards}
+    </div>`;
   }).join('');
 }
 
-function togglePlanDay2(id){
-  const body=document.getElementById(id);
+function togglePlanDay2(bodyId, iconId){
+  const body=document.getElementById(bodyId);
   if(!body) return;
   const open=body.classList.contains('open');
   body.classList.toggle('open',!open);
-  // find icon
-  const parts=id.split('-');
-  const ei=document.getElementById('ei-'+parts[1]+'-'+parts[2]);
-  if(ei) ei.classList.toggle('open',!open);
+  const ic=document.getElementById(iconId);
+  if(ic) ic.classList.toggle('open',!open);
 }
 
-// OPEN CREATE/EDIT PLAN
 function openCreatePlan(){
-  editingPlanId=null;
-  planDaysSelected=[];
+  editingPlanId=null; planDaysSelected=[];
   document.getElementById('plan-name').value='';
   document.getElementById('plan-desc').value='';
   document.querySelectorAll('.day-pill').forEach(p=>p.classList.remove('sel'));
@@ -999,14 +1216,12 @@ function openCreatePlan(){
   document.getElementById('create-plan-overlay').classList.add('show');
 }
 function editPlan(pi){
-  const plans=getPlans();
-  const plan=plans[pi];
-  editingPlanId=pi;
-  planDaysSelected=[...plan.schedule];
+  const plans=getPlans(); const plan=plans[pi];
+  editingPlanId=pi; planDaysSelected=[...plan.schedule];
   document.getElementById('plan-name').value=plan.name;
   document.getElementById('plan-desc').value=plan.desc||'';
   document.getElementById('plan-modal-title').textContent='Edit Program';
-  document.querySelectorAll('.day-pill').forEach(p=>{
+  document.querySelectorAll('#plan-day-pills .day-pill').forEach(p=>{
     const day=p.getAttribute('onclick').match(/'([^']+)'/)?.[1];
     p.classList.toggle('sel',planDaysSelected.includes(day));
   });
@@ -1020,23 +1235,20 @@ function togglePlanDay(el,day){
 function savePlan(){
   const name=document.getElementById('plan-name').value.trim();
   if(!name){toast('Enter a program name',true);return;}
-  if(!planDaysSelected.length){toast('Select at least one training day',true);return;}
+  if(!planDaysSelected.length){toast('Select at least one day',true);return;}
   const ORDER=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   const schedule=ORDER.filter(d=>planDaysSelected.includes(d));
   const plans=getPlans();
   if(editingPlanId!==null){
-    const existing=plans[editingPlanId];
-    plans[editingPlanId]={...existing, name, desc:document.getElementById('plan-desc').value.trim(), schedule};
-    // Remove days no longer in schedule
-    Object.keys(existing.days||{}).forEach(d=>{ if(!schedule.includes(d)) delete plans[editingPlanId].days[d]; });
+    const ex=plans[editingPlanId];
+    plans[editingPlanId]={...ex,name,desc:document.getElementById('plan-desc').value.trim(),schedule};
+    Object.keys(ex.days||{}).forEach(d=>{ if(!schedule.includes(d)) delete plans[editingPlanId].days[d]; });
     toast('Program updated!');
   } else {
-    plans.push({name, desc:document.getElementById('plan-desc').value.trim(), schedule, days:{}});
+    plans.push({name,desc:document.getElementById('plan-desc').value.trim(),schedule,days:{}});
     toast('Program created!');
   }
-  savePlansLocal(plans);
-  closeOverlay('create-plan-overlay');
-  loadMyPlan();
+  savePlansLocal(plans); closeOverlay('create-plan-overlay'); loadMyPlan();
 }
 function deletePlan(pi){
   if(!confirm('Delete this program?')) return;
@@ -1044,66 +1256,68 @@ function deletePlan(pi){
   toast('Program deleted'); loadMyPlan();
 }
 
-// ADD / EDIT WORKOUT DAY
-let editingPlanIndex=null;
+// ADD DAY
 function openAddDay(planIndex, day, currentType){
-  editingPlanIndex=planIndex;
-  editingDayKey=day;
+  editingPlanIndex=planIndex; editingDayKey=day;
   planExBuilder=[];
-  const plans=getPlans();
-  const plan=plans[planIndex];
+  const plans=getPlans(); const plan=plans[planIndex];
   const existing=plan.days?.[day];
   document.getElementById('add-day-title').textContent=day+' Workout';
-  document.getElementById('day-label').value=day;
+  document.getElementById('add-day-sub').textContent=plan.name;
   document.getElementById('day-type').value=existing?.type||currentType||'Push Day';
-  if(existing?.exercises){ planExBuilder=[...existing.exercises.map(e=>({...e}))]; }
+  if(existing?.exercises) planExBuilder=[...existing.exercises.map(e=>({...e}))];
   renderPlanExBuilder();
   document.getElementById('add-day-overlay').classList.add('show');
 }
 
 function addPlanExercise(){
-  planExBuilder.push({name:'',sets:'3',reps:'10',weight:'',unit:'kg',notes:''});
+  planExBuilder.push({name:'',sets:'3',reps:'10',distance:'',time:'',weight:'',unit:'kg',notes:'',_type:'strength'});
   renderPlanExBuilder();
 }
 function removePlanEx(i){ planExBuilder.splice(i,1); renderPlanExBuilder(); }
+
 function renderPlanExBuilder(){
   const el=document.getElementById('plan-ex-builder');
   if(!planExBuilder.length){
-    el.innerHTML='<p style="font-size:12px;color:var(--muted);text-align:center;padding:8px 0">No exercises yet — tap "+ Add exercise"</p>';
+    el.innerHTML='<p style="font-size:12px;color:var(--muted);text-align:center;padding:8px 0">No exercises — tap "+ Add exercise"</p>';
     return;
   }
-  el.innerHTML=planExBuilder.map((ex,i)=>`
-    <div class="prog-ex-item">
+  el.innerHTML=planExBuilder.map((ex,i)=>{
+    const isH=ex._type==='hyrox';
+    const isC=ex._type==='cardio';
+    return `<div class="prog-ex-item">
       <div class="prog-ex-head">
         <div class="ac-wrap" style="flex:1;margin-right:8px">
-          <input type="text" class="set-inp" style="width:100%;background:var(--surface);border-radius:6px;padding:7px 10px;font-size:13px;border:1px solid var(--border)"
+          <input type="text" class="set-inp" style="width:100%;padding:7px 10px;font-size:13px"
             value="${ex.name}" placeholder="Exercise name…" autocomplete="off"
             oninput="planExBuilder[${i}].name=this.value;filterPlanAC(this,${i})"
             onfocus="filterPlanAC(this,${i})">
           <div class="ac-list" id="pac-${i}"></div>
         </div>
-        <button class="set-del" onclick="removePlanEx(${i})">×</button>
+        <select class="set-inp" style="width:80px;padding:6px 4px;font-size:11px" onchange="planExBuilder[${i}]._type=this.value;renderPlanExBuilder()">
+          <option value="strength" ${ex._type==='strength'?'selected':''}>Strength</option>
+          <option value="cardio" ${ex._type==='cardio'?'selected':''}>Cardio</option>
+          <option value="hyrox" ${ex._type==='hyrox'?'selected':''}>Hyrox</option>
+        </select>
+        <button class="set-del" style="margin-left:6px" onclick="removePlanEx(${i})">×</button>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-top:8px">
-        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Sets</div>
-          <input class="set-inp" type="text" value="${ex.sets}" placeholder="3" inputmode="numeric" oninput="planExBuilder[${i}].sets=this.value"></div>
-        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Reps</div>
-          <input class="set-inp" type="text" value="${ex.reps}" placeholder="10" oninput="planExBuilder[${i}].reps=this.value"></div>
-        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Weight</div>
-          <input class="set-inp" type="text" value="${ex.weight}" placeholder="80" inputmode="decimal" oninput="planExBuilder[${i}].weight=this.value"></div>
-        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Unit</div>
-          <select class="set-inp" style="padding:6px 4px" onchange="planExBuilder[${i}].unit=this.value">
-            <option value="kg" ${ex.unit==='kg'?'selected':''}>kg</option>
-            <option value="lbs" ${ex.unit==='lbs'?'selected':''}>lbs</option>
-            <option value="BW" ${ex.unit==='BW'?'selected':''}>BW</option>
-          </select>
-        </div>
+      <div style="display:grid;grid-template-columns:${isC?'1fr 1fr 1fr':'1fr 1fr 1fr 1fr'};gap:6px;margin-top:8px">
+        ${!isC?`<div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">Sets</div>
+          <input class="set-inp" type="text" value="${ex.sets||'3'}" oninput="planExBuilder[${i}].sets=this.value" inputmode="numeric"></div>`:''}
+        ${!isC?`<div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">Reps</div>
+          <input class="set-inp" type="text" value="${ex.reps||'10'}" oninput="planExBuilder[${i}].reps=this.value"></div>`:''}
+        <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">${isC?'Intervals':'Distance'}</div>
+          <input class="set-inp" type="text" value="${ex.distance||''}" placeholder="${isC?'3':'1000m'}" oninput="planExBuilder[${i}].distance=this.value"></div>
+        <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">Target time</div>
+          <input class="set-inp" type="text" value="${ex.time||''}" placeholder="mm:ss" oninput="planExBuilder[${i}].time=this.value"></div>
+        ${isH||isC?`<div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">Load (kg)</div>
+          <input class="set-inp" type="text" value="${ex.weight||''}" placeholder="20" oninput="planExBuilder[${i}].weight=this.value" inputmode="decimal"></div>`:''}
       </div>
       <div style="margin-top:6px">
-        <input class="set-inp" type="text" value="${ex.notes}" placeholder="Notes e.g. pause at bottom…"
-          style="width:100%;font-size:12px" oninput="planExBuilder[${i}].notes=this.value">
+        <input class="set-inp" type="text" value="${ex.notes||''}" placeholder="Notes…" style="width:100%;font-size:12px" oninput="planExBuilder[${i}].notes=this.value">
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function filterPlanAC(input, idx){
@@ -1111,16 +1325,18 @@ function filterPlanAC(input, idx){
   const list=document.getElementById('pac-'+idx);
   if(!val){list.classList.remove('show');return;}
   const q=val.toLowerCase();
-  const matches=EX_DB.filter(e=>e.n.toLowerCase().includes(q)).slice(0,6);
+  const matches=EX_DB.filter(e=>e.n.toLowerCase().includes(q)).slice(0,7);
   if(!matches.length){list.classList.remove('show');return;}
   list.innerHTML=matches.map(e=>`
-    <div class="ac-item" onclick="pickPlanEx(${idx},'${e.n.replace(/'/g,"\\'")}')">
-      <span class="ac-n">${e.n}</span><span class="ac-g">${e.g}</span>
+    <div class="ac-item" onclick="pickPlanEx(${idx},'${e.n.replace(/'/g,"\\'")}','${e.h?'hyrox':e.g==='Cardio'?'cardio':'strength'}')">
+      <span class="ac-n">${e.n}${e.h?'<span class="ac-hyrox">HYROX</span>':''}</span>
+      <span class="ac-g">${e.g}</span>
     </div>`).join('');
   list.classList.add('show');
 }
-function pickPlanEx(idx, name){
+function pickPlanEx(idx, name, type){
   planExBuilder[idx].name=name;
+  planExBuilder[idx]._type=type;
   renderPlanExBuilder();
 }
 
@@ -1129,45 +1345,42 @@ function saveDayWorkout(){
   const valid=planExBuilder.filter(e=>e.name.trim());
   const plans=getPlans();
   if(!plans[editingPlanIndex].days) plans[editingPlanIndex].days={};
-  plans[editingPlanIndex].days[editingDayKey]={type, exercises:valid};
-  savePlansLocal(plans);
-  closeOverlay('add-day-overlay');
-  toast('Workout saved!');
-  loadMyPlan();
+  plans[editingPlanIndex].days[editingDayKey]={type,exercises:valid};
+  savePlansLocal(plans); closeOverlay('add-day-overlay');
+  toast('Workout saved!'); loadMyPlan();
 }
 
-// LOAD PLAN INTO LOG
 function loadDayIntoLog(planIndex, day){
   const plans=getPlans();
   const workout=plans[planIndex]?.days?.[day];
   if(!workout){toast('No workout set for this day',true);return;}
-  // Pre-fill log page
   document.getElementById('session-type').value=workout.type;
   currentExGroups=workout.exercises.filter(e=>e.name).map(ex=>({
     name:ex.name,
-    sets:[{reps:ex.reps,weight:ex.weight,notes:ex.notes||''}]
+    _type:ex._type||'strength',
+    sets:[{reps:ex.reps||'',weight:ex.weight||'',distance:ex.distance||'',time:ex.time||'',notes:ex.notes||'',unit:ex.unit||'kg',distUnit:'m',_type:ex._type||'strength'}]
   }));
   renderCurrentExercises();
+  renderHyroxBanner();
   showPage('log');
-  toast('Loaded: '+workout.type+' for '+day);
+  toast('Loaded: '+workout.type);
 }
 
-// LOAD PLAN MODAL (from log page)
 function openLoadPlanModal(){
   const plans=getPlans();
   const el=document.getElementById('load-plan-list');
   if(!plans.length){
-    el.innerHTML='<p style="font-size:13px;color:var(--muted);text-align:center;padding:20px 0">No programs yet. Go to My Plan to create one.</p>';
-    document.getElementById('load-plan-overlay').classList.add('show');
-    return;
+    el.innerHTML='<p style="font-size:13px;color:var(--muted);text-align:center;padding:20px 0">No programs yet. Go to My Plan tab to create one.</p>';
+    document.getElementById('load-plan-overlay').classList.add('show'); return;
   }
   el.innerHTML=plans.map((plan,pi)=>{
     const rows=plan.schedule.map(day=>{
       const w=plan.days?.[day];
       if(!w) return '';
+      const isH=w.type?.toLowerCase().includes('hyrox');
       return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
         <div>
-          <div style="font-size:13px;font-weight:600">${day} — ${w.type}</div>
+          <div style="font-size:13px;font-weight:600">${day} — ${w.type}${isH?' 🔥':''}</div>
           <div style="font-size:11px;color:var(--muted)">${w.exercises.length} exercise${w.exercises.length!==1?'s':''}</div>
         </div>
         <button class="plan-start-btn" onclick="loadDayIntoLog(${pi},'${day}');closeOverlay('load-plan-overlay')">Load</button>
@@ -1175,7 +1388,7 @@ function openLoadPlanModal(){
     }).filter(Boolean).join('');
     return `<div style="margin-bottom:16px">
       <div style="font-size:14px;font-weight:700;margin-bottom:6px;color:var(--purple)">${plan.name}</div>
-      ${rows||'<p style="font-size:12px;color:var(--muted);padding:4px 0">No workouts set yet</p>'}
+      ${rows||'<p style="font-size:12px;color:var(--muted)">No workouts set yet</p>'}
     </div>`;
   }).join('');
   document.getElementById('load-plan-overlay').classList.add('show');
@@ -1192,7 +1405,7 @@ async function loadHistory(){
   if(!sessions.length){
     list.innerHTML=`<div class="empty-state">
       <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-      <p>No sessions yet. Log your first workout!</p>
+      <p>No sessions yet.</p>
     </div>`; return;
   }
   list.innerHTML=sessions.map(s=>{
@@ -1202,24 +1415,34 @@ async function loadHistory(){
     const groups={};
     exs.forEach(e=>{if(!groups[e.exercise_name])groups[e.exercise_name]=[];groups[e.exercise_name].push(e);});
     const gKeys=Object.keys(groups);
-    const chips=gKeys.slice(0,5).map(n=>`<span class="chip">${n}</span>`).join('');
+    const isHyroxSess=s.session_type?.toLowerCase().includes('hyrox');
+    const chips=gKeys.slice(0,5).map(n=>{
+      const isH=EX_DB.find(e=>e.n===n)?.h;
+      return `<span class="chip${isH?' hyrox-chip':''}">${n}</span>`;
+    }).join('');
     const moreChips=gKeys.length>5?`<span class="chip">+${gKeys.length-5} more</span>`:'';
     const detail=gKeys.map(name=>{
       const sets=groups[name];
+      const isH=EX_DB.find(e=>e.n===name)?.h;
       return `<div class="hist-ex-group">
-        <div class="hist-ex-name">${name}</div>
-        ${sets.map((st,i)=>`<div class="hist-set-line"><span>Set ${i+1}: ${st.reps||'—'} reps${st.notes?' · '+st.notes:''}</span><span>${st.weight_kg?st.weight_kg+(st.weight_unit||'kg'):'BW'}</span></div>`).join('')}
+        <div class="hist-ex-name">${name}${isH?'<span class="badge-hyrox" style="font-size:9px;padding:1px 5px">HYROX</span>':''}</div>
+        ${sets.map((st,i)=>{
+          const timeNote=st.notes?.match(/Time: ([^ ·]+)/)?.[1];
+          const dist=st.reps;
+          return `<div class="hist-set-line">
+            <span>Set ${i+1}: ${dist||'—'}${st.notes&&!st.notes.startsWith('Time:')?(' · '+st.notes.replace(/^Time: [^ ·]+ · ?/,'')):''}</span>
+            <span style="color:${isH?'var(--hyrox)':'var(--teal)'};font-weight:700">${timeNote||''}</span>
+          </div>`;
+        }).join('')}
       </div>`;
     }).join('');
     return `<div class="sess-card">
       <div class="sess-head" onclick="toggleSess('${s.id}')">
         <div class="sess-info">
-          <h4>${s.session_type}</h4>
+          <h4>${s.session_type}${isHyroxSess?' 🔥':''}</h4>
           <p>${ds} · ${gKeys.length} exercise${gKeys.length!==1?'s':''}${s.notes?' · '+s.notes:''}</p>
         </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="expand-icon" id="icon-${s.id}">⌄</span>
-        </div>
+        <span class="expand-icon" id="icon-${s.id}">⌄</span>
       </div>
       <div class="sess-chips">${chips}${moreChips}</div>
       <div class="sess-detail" id="det-${s.id}">
@@ -1297,7 +1520,7 @@ async function loadMilestones(){
   if(!data.length){
     list.innerHTML=`<div class="empty-state">
       <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-      <p>No milestones yet.</p>
+      <p>No milestones yet. Record your first win!</p>
     </div>`; return;
   }
   list.innerHTML=data.map(m=>{
@@ -1352,11 +1575,12 @@ async function loadStats(){
   }
   const allExs=sessions.flatMap(s=>s.exercises||[]);
   const totalSets=allExs.reduce((a,e)=>a+(e.sets||0),0);
+  const hyroxSessions=sessions.filter(s=>s.session_type?.toLowerCase().includes('hyrox')).length;
   sumEl.innerHTML=`
     <div class="stat-card"><div class="stat-val">${sessions.length}</div><div class="stat-lbl">Total sessions</div></div>
     <div class="stat-card"><div class="stat-val">${thisWeek}</div><div class="stat-lbl">This week</div></div>
     <div class="stat-card"><div class="stat-val">${streak}</div><div class="stat-lbl">Day streak</div></div>
-    <div class="stat-card"><div class="stat-val">${totalSets}</div><div class="stat-lbl">Total sets</div></div>`;
+    <div class="stat-card"><div class="stat-val" style="color:var(--hyrox)">${hyroxSessions}</div><div class="stat-lbl">Hyrox sessions</div></div>`;
   const pbMap={};
   allExs.forEach(e=>{if(e.weight_kg>0&&(!pbMap[e.exercise_name]||e.weight_kg>pbMap[e.exercise_name]))pbMap[e.exercise_name]=e.weight_kg;});
   const pbEntries=Object.entries(pbMap).sort((a,b)=>b[1]-a[1]).slice(0,15);
@@ -1371,11 +1595,15 @@ async function loadStats(){
   if(freqEntries.length){
     document.getElementById('freq-card').style.display='block';
     const mx=freqEntries[0][1];
-    document.getElementById('freq-list').innerHTML=freqEntries.map(([n,c])=>`
-      <div class="freq-bar-wrap">
-        <div class="freq-bar-label"><span style="color:var(--soft)">${n}</span><span style="color:var(--teal)">${c}×</span></div>
-        <div class="freq-bar-bg"><div class="freq-bar-fill" style="width:${Math.round((c/mx)*100)}%"></div></div>
-      </div>`).join('');
+    document.getElementById('freq-list').innerHTML=freqEntries.map(([n,c])=>{
+      const isH=EX_DB.find(e=>e.n===n)?.h;
+      return `<div class="freq-bar-wrap">
+        <div class="freq-bar-label">
+          <span style="color:var(--soft)">${n}${isH?' 🔥':''}</span>
+          <span style="color:${isH?'var(--hyrox)':'var(--teal)'}">${c}×</span>
+        </div>
+        <div class="freq-bar-bg"><div class="freq-bar-fill" style="width:${Math.round((c/mx)*100)}%;background:${isH?'var(--hyrox)':'var(--red)'}"></div></div>
+      </div>`;}).join('');
   }
   const typeMap={};
   sessions.forEach(s=>{typeMap[s.session_type]=(typeMap[s.session_type]||0)+1;});
@@ -1383,11 +1611,12 @@ async function loadStats(){
   if(typeEntries.length){
     document.getElementById('type-card').style.display='block';
     const mx=typeEntries[0][1];
-    document.getElementById('type-list').innerHTML=typeEntries.map(([n,c])=>`
-      <div class="freq-bar-wrap">
-        <div class="freq-bar-label"><span style="color:var(--soft)">${n}</span><span style="color:var(--teal)">${c}</span></div>
-        <div class="freq-bar-bg"><div class="freq-bar-fill" style="width:${Math.round((c/mx)*100)}%;background:var(--teal)"></div></div>
-      </div>`).join('');
+    document.getElementById('type-list').innerHTML=typeEntries.map(([n,c])=>{
+      const isH=n.toLowerCase().includes('hyrox');
+      return `<div class="freq-bar-wrap">
+        <div class="freq-bar-label"><span style="color:var(--soft)">${n}${isH?' 🔥':''}</span><span style="color:var(--teal)">${c}</span></div>
+        <div class="freq-bar-bg"><div class="freq-bar-fill" style="width:${Math.round((c/mx)*100)}%;background:${isH?'var(--hyrox)':'var(--teal)'}"></div></div>
+      </div>`;}).join('');
   }
 }
 
@@ -1406,7 +1635,8 @@ async function generatePlan(){
   btn.disabled=true; btn.innerHTML='<div class="spinner"></div> Generating…';
   wrap.style.display='block';
   out.innerHTML='<div class="typing-dots"><span></span><span></span><span></span></div>';
-  const prompt=`You are an expert personal trainer. Create a personalised workout plan.
+  const isHyrox=selectedGoal==='Hyrox Competition';
+  const prompt=`You are an expert personal trainer${isHyrox?' and Hyrox specialist':''}.
 Goal: ${selectedGoal}
 Weight: ${document.getElementById('ai-weight').value||'not specified'}kg
 Age: ${document.getElementById('ai-age').value||'not specified'}
@@ -1414,7 +1644,14 @@ Training days/week: ${document.getElementById('ai-days').value}
 Level: ${document.getElementById('ai-level').value}
 ${document.getElementById('ai-limits').value?'Limitations: '+document.getElementById('ai-limits').value:''}
 ${document.getElementById('ai-custom').value?'Request: '+document.getElementById('ai-custom').value:''}
-Include: weekly split, 5-7 exercises per session with sets/reps/rest, progression tips, cardio rec, key nutrition tip. Under 600 words. Use markdown headings.`;
+${isHyrox?`
+For Hyrox training include:
+- Weekly periodisation (run volume, station-specific work, strength)
+- All 8 Hyrox stations with specific distances/reps and target times
+- Zone 2 running guidance (heart rate targets)
+- Race strategy tips for Hyrox Open/Pro divisions
+- Key nutrition timing around training sessions`:'Include: weekly split, 5-7 exercises per session with sets/reps, progression notes, cardio rec, nutrition tip.'}
+Under 650 words. Use markdown headings.`;
   try{
     const res=await fetch('/.netlify/functions/ai-plan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
     if(!res.ok) throw new Error((await res.json()).error||'Error '+res.status);
@@ -1428,7 +1665,7 @@ Include: weekly split, 5-7 exercises per session with sets/reps/rest, progressio
 
 // ── SERVICE WORKER ────────────────────────────────────────────
 if('serviceWorker' in navigator){
-  const sw=`const C='formd-v3';
+  const sw=`const C='formd-v4';
 self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll(['/']).then(()=>self.skipWaiting()))));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{
