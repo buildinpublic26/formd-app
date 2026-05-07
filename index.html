@@ -1128,65 +1128,117 @@ document.querySelectorAll('.overlay').forEach(ov=>{
   ov.addEventListener('click',e=>{ if(e.target===ov) ov.classList.remove('show'); });
 });
 
-// ── MY PLAN ───────────────────────────────────────────────────
-const PLAN_KEY='formd_plans_v2';
-function getPlans(){ try{return JSON.parse(localStorage.getItem(PLAN_KEY))||[];}catch{return[];} }
-function savePlansLocal(p){ localStorage.setItem(PLAN_KEY,JSON.stringify(p)); }
+// ── MY PLAN — Supabase ───────────────────────────────────────
+// Plans stored in Supabase `training_programs` table — syncs across all devices
 
-function loadMyPlan(){
-  const plans=getPlans();
-  const headerArea=document.getElementById('plan-header-area');
-  const listArea=document.getElementById('plan-list-area');
-  headerArea.innerHTML=`
+let plansCache = [];
+
+async function getPlans() {
+  if (!currentUser) return [];
+  const { data, error } = await sb
+    .from('training_programs')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('created_at', { ascending: true });
+  if (error) { console.error('getPlans error:', error.message); return plansCache; }
+  plansCache = (data || []).map(row => ({
+    _id:      row.id,
+    name:     row.name,
+    desc:     row.description || '',
+    schedule: row.schedule || [],
+    days:     row.days || {}
+  }));
+  return plansCache;
+}
+
+async function createPlanInDB(plan) {
+  const { data, error } = await sb.from('training_programs').insert({
+    user_id:     currentUser.id,
+    name:        plan.name,
+    description: plan.desc || null,
+    schedule:    plan.schedule,
+    days:        plan.days || {}
+  }).select().single();
+  if (error) throw error;
+  return data;
+}
+
+async function updatePlanInDB(id, updates) {
+  const payload = {};
+  if (updates.name        !== undefined) payload.name        = updates.name;
+  if (updates.desc        !== undefined) payload.description = updates.desc || null;
+  if (updates.schedule    !== undefined) payload.schedule    = updates.schedule;
+  if (updates.days        !== undefined) payload.days        = updates.days;
+  payload.updated_at = new Date().toISOString();
+  const { error } = await sb.from('training_programs').update(payload).eq('id', id).eq('user_id', currentUser.id);
+  if (error) throw error;
+}
+
+async function deletePlanFromDB(id) {
+  const { error } = await sb.from('training_programs').delete().eq('id', id).eq('user_id', currentUser.id);
+  if (error) throw error;
+}
+
+async function loadMyPlan() {
+  const plans = await getPlans();
+  const headerArea = document.getElementById('plan-header-area');
+  const listArea   = document.getElementById('plan-list-area');
+
+  headerArea.innerHTML = `
     <div class="plan-banner">
       <div class="plan-banner-text">
         <h3>My Training Programs</h3>
-        <p>${plans.length?plans.length+' program'+(plans.length!==1?'s':''):'No programs yet'}</p>
+        <p>${plans.length ? plans.length + ' program' + (plans.length !== 1 ? 's' : '') : 'No programs yet'}</p>
       </div>
       <button class="btn-sm active-pill" onclick="openCreatePlan()">+ New program</button>
     </div>`;
-  if(!plans.length){
-    listArea.innerHTML=`<div class="empty-state">
+
+  if (!plans.length) {
+    listArea.innerHTML = `<div class="empty-state">
       <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
-      <p>Tap "+ New program" to build your training plan. Add Hyrox stations, strength sessions, or a mix.</p>
-    </div>`; return;
+      <p>Tap "+ New program" to build your training plan. Syncs across all your devices.</p>
+    </div>`;
+    return;
   }
-  listArea.innerHTML=plans.map((plan,pi)=>{
-    const days=plan.days||{};
-    const dayCards=plan.schedule.map(day=>{
-      const w=days[day]||null;
-      const exCount=w?.exercises?.length||0;
-      const isHyroxDay=w?.type?.toLowerCase().includes('hyrox');
+
+  listArea.innerHTML = plans.map((plan, pi) => {
+    const days = plan.days || {};
+    const dayCards = plan.schedule.map(day => {
+      const w        = days[day] || null;
+      const exCount  = w?.exercises?.length || 0;
+      const isHyroxDay = w?.type?.toLowerCase().includes('hyrox');
       return `
         <div class="plan-day-card" style="margin-bottom:8px">
           <div class="plan-day-head" onclick="togglePlanDay2('pd-${pi}-${day}','ei-${pi}-${day}')">
             <div>
-              <div class="plan-day-label">${day} ${isHyroxDay?'🔥':''}</div>
-              <div class="plan-day-sub">${w?w.type+' · '+exCount+' exercise'+(exCount!==1?'s':''):'Rest day — no workout set'}</div>
+              <div class="plan-day-label">${day} ${isHyroxDay ? '🔥' : ''}</div>
+              <div class="plan-day-sub">${w ? w.type + ' · ' + exCount + ' exercise' + (exCount !== 1 ? 's' : '') : 'Rest day — no workout set'}</div>
             </div>
             <div style="display:flex;align-items:center;gap:6px">
-              ${w?`<button class="plan-start-btn" onclick="event.stopPropagation();loadDayIntoLog(${pi},'${day}')">Log this</button>`:''}
-              <button class="btn-sm" onclick="event.stopPropagation();openAddDay(${pi},'${day}','${w?w.type:'Push Day'}')">Edit</button>
+              ${w ? `<button class="plan-start-btn" onclick="event.stopPropagation();loadDayIntoLog(${pi},'${day}')">Log this</button>` : ''}
+              <button class="btn-sm" onclick="event.stopPropagation();openAddDay(${pi},'${day}','${w ? w.type : 'Push Day'}')">Edit</button>
               <span class="expand-icon" id="ei-${pi}-${day}">⌄</span>
             </div>
           </div>
           <div class="plan-day-body" id="pd-${pi}-${day}">
-            ${w&&w.exercises.length?w.exercises.map(ex=>{
-              const isH=ex._type==='hyrox'||EX_DB.find(e=>e.n===ex.name)?.h;
+            ${w && w.exercises.length ? w.exercises.map(ex => {
+              const isH = ex._type === 'hyrox' || EX_DB.find(e => e.n === ex.name)?.h;
               return `<div class="plan-ex-row">
                 <div>
-                  <div class="plan-ex-name">${ex.name}${isH?'<span class="badge-hyrox" style="font-size:9px;padding:1px 5px">HYROX</span>':''}</div>
-                  <div class="plan-ex-detail">${ex.sets} sets × ${ex.reps}${ex.distance?' · '+ex.distance:''}${ex.time?' in '+ex.time:''}${ex.weight?' · '+ex.weight+'kg':''}</div>
+                  <div class="plan-ex-name">${ex.name}${isH ? '<span class="badge-hyrox" style="font-size:9px;padding:1px 5px">HYROX</span>' : ''}</div>
+                  <div class="plan-ex-detail">${ex.sets} sets × ${ex.reps}${ex.distance ? ' · ' + ex.distance : ''}${ex.time ? ' in ' + ex.time : ''}${ex.weight ? ' · ' + ex.weight + 'kg' : ''}</div>
                 </div>
-              </div>`;}).join(''):`<p style="font-size:12px;color:var(--muted);padding:4px 0">No exercises set — tap Edit</p>`}
+              </div>`;
+            }).join('') : `<p style="font-size:12px;color:var(--muted);padding:4px 0">No exercises set — tap Edit</p>`}
           </div>
         </div>`;
     }).join('');
+
     return `<div style="margin-bottom:20px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <div>
           <div style="font-size:16px;font-weight:800">${plan.name}</div>
-          ${plan.desc?`<div style="font-size:12px;color:var(--muted);margin-top:2px">${plan.desc}</div>`:''}
+          ${plan.desc ? `<div style="font-size:12px;color:var(--muted);margin-top:2px">${plan.desc}</div>` : ''}
         </div>
         <div style="display:flex;gap:6px">
           <button class="btn-sm" onclick="editPlan(${pi})">Edit</button>
@@ -1198,93 +1250,116 @@ function loadMyPlan(){
   }).join('');
 }
 
-function togglePlanDay2(bodyId, iconId){
-  const body=document.getElementById(bodyId);
-  if(!body) return;
-  const open=body.classList.contains('open');
-  body.classList.toggle('open',!open);
-  const ic=document.getElementById(iconId);
-  if(ic) ic.classList.toggle('open',!open);
+function togglePlanDay2(bodyId, iconId) {
+  const body = document.getElementById(bodyId);
+  if (!body) return;
+  const open = body.classList.contains('open');
+  body.classList.toggle('open', !open);
+  const ic = document.getElementById(iconId);
+  if (ic) ic.classList.toggle('open', !open);
 }
 
-function openCreatePlan(){
-  editingPlanId=null; planDaysSelected=[];
-  document.getElementById('plan-name').value='';
-  document.getElementById('plan-desc').value='';
-  document.querySelectorAll('.day-pill').forEach(p=>p.classList.remove('sel'));
-  document.getElementById('plan-modal-title').textContent='Create Training Program';
+function openCreatePlan() {
+  editingPlanId = null; planDaysSelected = [];
+  document.getElementById('plan-name').value = '';
+  document.getElementById('plan-desc').value = '';
+  document.querySelectorAll('.day-pill').forEach(p => p.classList.remove('sel'));
+  document.getElementById('plan-modal-title').textContent = 'Create Training Program';
   document.getElementById('create-plan-overlay').classList.add('show');
 }
-function editPlan(pi){
-  const plans=getPlans(); const plan=plans[pi];
-  editingPlanId=pi; planDaysSelected=[...plan.schedule];
-  document.getElementById('plan-name').value=plan.name;
-  document.getElementById('plan-desc').value=plan.desc||'';
-  document.getElementById('plan-modal-title').textContent='Edit Program';
-  document.querySelectorAll('#plan-day-pills .day-pill').forEach(p=>{
-    const day=p.getAttribute('onclick').match(/'([^']+)'/)?.[1];
-    p.classList.toggle('sel',planDaysSelected.includes(day));
+
+function editPlan(pi) {
+  const plan = plansCache[pi];
+  if (!plan) return;
+  editingPlanId   = pi;
+  planDaysSelected = [...plan.schedule];
+  document.getElementById('plan-name').value = plan.name;
+  document.getElementById('plan-desc').value = plan.desc || '';
+  document.getElementById('plan-modal-title').textContent = 'Edit Program';
+  document.querySelectorAll('#plan-day-pills .day-pill').forEach(p => {
+    const day = p.getAttribute('onclick').match(/'([^']+)'/)?.[1];
+    p.classList.toggle('sel', planDaysSelected.includes(day));
   });
   document.getElementById('create-plan-overlay').classList.add('show');
 }
-function togglePlanDay(el,day){
+
+function togglePlanDay(el, day) {
   el.classList.toggle('sel');
-  if(planDaysSelected.includes(day)) planDaysSelected=planDaysSelected.filter(d=>d!==day);
+  if (planDaysSelected.includes(day)) planDaysSelected = planDaysSelected.filter(d => d !== day);
   else planDaysSelected.push(day);
 }
-function savePlan(){
-  const name=document.getElementById('plan-name').value.trim();
-  if(!name){toast('Enter a program name',true);return;}
-  if(!planDaysSelected.length){toast('Select at least one day',true);return;}
-  const ORDER=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const schedule=ORDER.filter(d=>planDaysSelected.includes(d));
-  const plans=getPlans();
-  if(editingPlanId!==null){
-    const ex=plans[editingPlanId];
-    plans[editingPlanId]={...ex,name,desc:document.getElementById('plan-desc').value.trim(),schedule};
-    Object.keys(ex.days||{}).forEach(d=>{ if(!schedule.includes(d)) delete plans[editingPlanId].days[d]; });
-    toast('Program updated!');
-  } else {
-    plans.push({name,desc:document.getElementById('plan-desc').value.trim(),schedule,days:{}});
-    toast('Program created!');
+
+async function savePlan() {
+  const name = document.getElementById('plan-name').value.trim();
+  if (!name) { toast('Enter a program name', true); return; }
+  if (!planDaysSelected.length) { toast('Select at least one day', true); return; }
+  const ORDER    = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const schedule = ORDER.filter(d => planDaysSelected.includes(d));
+  const desc     = document.getElementById('plan-desc').value.trim();
+
+  try {
+    if (editingPlanId !== null) {
+      const existing = plansCache[editingPlanId];
+      // Remove days no longer in schedule from days object
+      const updatedDays = { ...existing.days };
+      Object.keys(updatedDays).forEach(d => { if (!schedule.includes(d)) delete updatedDays[d]; });
+      await updatePlanInDB(existing._id, { name, desc, schedule, days: updatedDays });
+      toast('Program updated!');
+    } else {
+      await createPlanInDB({ name, desc, schedule, days: {} });
+      toast('Program created!');
+    }
+  } catch (e) {
+    toast('Error saving program: ' + e.message, true); return;
   }
-  savePlansLocal(plans); closeOverlay('create-plan-overlay'); loadMyPlan();
-}
-function deletePlan(pi){
-  if(!confirm('Delete this program?')) return;
-  const plans=getPlans(); plans.splice(pi,1); savePlansLocal(plans);
-  toast('Program deleted'); loadMyPlan();
+
+  closeOverlay('create-plan-overlay');
+  loadMyPlan();
 }
 
-// ADD DAY
-function openAddDay(planIndex, day, currentType){
-  editingPlanIndex=planIndex; editingDayKey=day;
-  planExBuilder=[];
-  const plans=getPlans(); const plan=plans[planIndex];
-  const existing=plan.days?.[day];
-  document.getElementById('add-day-title').textContent=day+' Workout';
-  document.getElementById('add-day-sub').textContent=plan.name;
-  document.getElementById('day-type').value=existing?.type||currentType||'Push Day';
-  if(existing?.exercises) planExBuilder=[...existing.exercises.map(e=>({...e}))];
+async function deletePlan(pi) {
+  if (!confirm('Delete this program?')) return;
+  const plan = plansCache[pi];
+  if (!plan) return;
+  try {
+    await deletePlanFromDB(plan._id);
+    toast('Program deleted');
+    loadMyPlan();
+  } catch (e) {
+    toast('Error: ' + e.message, true);
+  }
+}
+
+// ── ADD / EDIT WORKOUT DAY ────────────────────────────────────
+function openAddDay(planIndex, day, currentType) {
+  editingPlanIndex = planIndex;
+  editingDayKey    = day;
+  planExBuilder    = [];
+  const plan     = plansCache[planIndex];
+  const existing = plan?.days?.[day];
+  document.getElementById('add-day-title').textContent = day + ' Workout';
+  document.getElementById('add-day-sub').textContent   = plan?.name || '';
+  document.getElementById('day-type').value = existing?.type || currentType || 'Push Day';
+  if (existing?.exercises) planExBuilder = [...existing.exercises.map(e => ({ ...e }))];
   renderPlanExBuilder();
   document.getElementById('add-day-overlay').classList.add('show');
 }
 
-function addPlanExercise(){
-  planExBuilder.push({name:'',sets:'3',reps:'10',distance:'',time:'',weight:'',unit:'kg',notes:'',_type:'strength'});
+function addPlanExercise() {
+  planExBuilder.push({ name:'', sets:'3', reps:'10', distance:'', time:'', weight:'', unit:'kg', notes:'', _type:'strength' });
   renderPlanExBuilder();
 }
-function removePlanEx(i){ planExBuilder.splice(i,1); renderPlanExBuilder(); }
+function removePlanEx(i) { planExBuilder.splice(i, 1); renderPlanExBuilder(); }
 
-function renderPlanExBuilder(){
-  const el=document.getElementById('plan-ex-builder');
-  if(!planExBuilder.length){
-    el.innerHTML='<p style="font-size:12px;color:var(--muted);text-align:center;padding:8px 0">No exercises — tap "+ Add exercise"</p>';
+function renderPlanExBuilder() {
+  const el = document.getElementById('plan-ex-builder');
+  if (!planExBuilder.length) {
+    el.innerHTML = '<p style="font-size:12px;color:var(--muted);text-align:center;padding:8px 0">No exercises — tap "+ Add exercise"</p>';
     return;
   }
-  el.innerHTML=planExBuilder.map((ex,i)=>{
-    const isH=ex._type==='hyrox';
-    const isC=ex._type==='cardio';
+  el.innerHTML = planExBuilder.map((ex, i) => {
+    const isH = ex._type === 'hyrox';
+    const isC = ex._type === 'cardio';
     return `<div class="prog-ex-item">
       <div class="prog-ex-head">
         <div class="ac-wrap" style="flex:1;margin-right:8px">
@@ -1296,8 +1371,8 @@ function renderPlanExBuilder(){
         </div>
         <select class="set-inp" style="width:80px;padding:6px 4px;font-size:11px" onchange="planExBuilder[${i}]._type=this.value;renderPlanExBuilder()">
           <option value="strength" ${ex._type==='strength'?'selected':''}>Strength</option>
-          <option value="cardio" ${ex._type==='cardio'?'selected':''}>Cardio</option>
-          <option value="hyrox" ${ex._type==='hyrox'?'selected':''}>Hyrox</option>
+          <option value="cardio"   ${ex._type==='cardio'  ?'selected':''}>Cardio</option>
+          <option value="hyrox"    ${ex._type==='hyrox'   ?'selected':''}>Hyrox</option>
         </select>
         <button class="set-del" style="margin-left:6px" onclick="removePlanEx(${i})">×</button>
       </div>
@@ -1320,75 +1395,89 @@ function renderPlanExBuilder(){
   }).join('');
 }
 
-function filterPlanAC(input, idx){
-  const val=input.value; planExBuilder[idx].name=val;
-  const list=document.getElementById('pac-'+idx);
-  if(!val){list.classList.remove('show');return;}
-  const q=val.toLowerCase();
-  const matches=EX_DB.filter(e=>e.n.toLowerCase().includes(q)).slice(0,7);
-  if(!matches.length){list.classList.remove('show');return;}
-  list.innerHTML=matches.map(e=>`
-    <div class="ac-item" onclick="pickPlanEx(${idx},'${e.n.replace(/'/g,"\\'")}','${e.h?'hyrox':e.g==='Cardio'?'cardio':'strength'}')">
-      <span class="ac-n">${e.n}${e.h?'<span class="ac-hyrox">HYROX</span>':''}</span>
+function filterPlanAC(input, idx) {
+  const val = input.value;
+  planExBuilder[idx].name = val;
+  const list = document.getElementById('pac-' + idx);
+  if (!val) { list.classList.remove('show'); return; }
+  const q       = val.toLowerCase();
+  const matches = EX_DB.filter(e => e.n.toLowerCase().includes(q)).slice(0, 7);
+  if (!matches.length) { list.classList.remove('show'); return; }
+  list.innerHTML = matches.map(e => `
+    <div class="ac-item" onclick="pickPlanEx(${idx},'${e.n.replace(/'/g,"\'")}','${e.h?'hyrox':e.g==='Cardio'?'cardio':'strength'}')">
+      <span class="ac-n">${e.n}${e.h ? '<span class="ac-hyrox">HYROX</span>' : ''}</span>
       <span class="ac-g">${e.g}</span>
     </div>`).join('');
   list.classList.add('show');
 }
-function pickPlanEx(idx, name, type){
-  planExBuilder[idx].name=name;
-  planExBuilder[idx]._type=type;
+
+function pickPlanEx(idx, name, type) {
+  planExBuilder[idx].name  = name;
+  planExBuilder[idx]._type = type;
   renderPlanExBuilder();
 }
 
-function saveDayWorkout(){
-  const type=document.getElementById('day-type').value;
-  const valid=planExBuilder.filter(e=>e.name.trim());
-  const plans=getPlans();
-  if(!plans[editingPlanIndex].days) plans[editingPlanIndex].days={};
-  plans[editingPlanIndex].days[editingDayKey]={type,exercises:valid};
-  savePlansLocal(plans); closeOverlay('add-day-overlay');
-  toast('Workout saved!'); loadMyPlan();
+async function saveDayWorkout() {
+  const type  = document.getElementById('day-type').value;
+  const valid = planExBuilder.filter(e => e.name.trim());
+  const plan  = plansCache[editingPlanIndex];
+  if (!plan) return;
+
+  const updatedDays = { ...plan.days };
+  updatedDays[editingDayKey] = { type, exercises: valid };
+
+  try {
+    await updatePlanInDB(plan._id, { days: updatedDays });
+    closeOverlay('add-day-overlay');
+    toast('Workout saved!');
+    loadMyPlan();
+  } catch (e) {
+    toast('Error saving workout: ' + e.message, true);
+  }
 }
 
-function loadDayIntoLog(planIndex, day){
-  const plans=getPlans();
-  const workout=plans[planIndex]?.days?.[day];
-  if(!workout){toast('No workout set for this day',true);return;}
-  document.getElementById('session-type').value=workout.type;
-  currentExGroups=workout.exercises.filter(e=>e.name).map(ex=>({
-    name:ex.name,
-    _type:ex._type||'strength',
-    sets:[{reps:ex.reps||'',weight:ex.weight||'',distance:ex.distance||'',time:ex.time||'',notes:ex.notes||'',unit:ex.unit||'kg',distUnit:'m',_type:ex._type||'strength'}]
+function loadDayIntoLog(planIndex, day) {
+  const plan    = plansCache[planIndex];
+  const workout = plan?.days?.[day];
+  if (!workout) { toast('No workout set for this day', true); return; }
+  document.getElementById('session-type').value = workout.type;
+  currentExGroups = workout.exercises.filter(e => e.name).map(ex => ({
+    name:  ex.name,
+    _type: ex._type || 'strength',
+    sets:  [{ reps: ex.reps || '', weight: ex.weight || '', distance: ex.distance || '',
+              time: ex.time || '', notes: ex.notes || '', unit: ex.unit || 'kg',
+              distUnit: 'm', _type: ex._type || 'strength' }]
   }));
   renderCurrentExercises();
   renderHyroxBanner();
   showPage('log');
-  toast('Loaded: '+workout.type);
+  toast('Loaded: ' + workout.type);
 }
 
-function openLoadPlanModal(){
-  const plans=getPlans();
-  const el=document.getElementById('load-plan-list');
-  if(!plans.length){
-    el.innerHTML='<p style="font-size:13px;color:var(--muted);text-align:center;padding:20px 0">No programs yet. Go to My Plan tab to create one.</p>';
-    document.getElementById('load-plan-overlay').classList.add('show'); return;
+async function openLoadPlanModal() {
+  const plans = await getPlans();
+  const el    = document.getElementById('load-plan-list');
+  if (!plans.length) {
+    el.innerHTML = '<p style="font-size:13px;color:var(--muted);text-align:center;padding:20px 0">No programs yet. Go to My Plan tab to create one.</p>';
+    document.getElementById('load-plan-overlay').classList.add('show');
+    return;
   }
-  el.innerHTML=plans.map((plan,pi)=>{
-    const rows=plan.schedule.map(day=>{
-      const w=plan.days?.[day];
-      if(!w) return '';
-      const isH=w.type?.toLowerCase().includes('hyrox');
+  el.innerHTML = plans.map((plan, pi) => {
+    const rows = plan.schedule.map(day => {
+      const w   = plan.days?.[day];
+      if (!w) return '';
+      const isH = w.type?.toLowerCase().includes('hyrox');
       return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
         <div>
-          <div style="font-size:13px;font-weight:600">${day} — ${w.type}${isH?' 🔥':''}</div>
-          <div style="font-size:11px;color:var(--muted)">${w.exercises.length} exercise${w.exercises.length!==1?'s':''}</div>
+          <div style="font-size:13px;font-weight:600">${day} — ${w.type}${isH ? ' 🔥' : ''}</div>
+          <div style="font-size:11px;color:var(--muted)">${w.exercises.length} exercise${w.exercises.length !== 1 ? 's' : ''}</div>
         </div>
         <button class="plan-start-btn" onclick="loadDayIntoLog(${pi},'${day}');closeOverlay('load-plan-overlay')">Load</button>
       </div>`;
     }).filter(Boolean).join('');
     return `<div style="margin-bottom:16px">
       <div style="font-size:14px;font-weight:700;margin-bottom:6px;color:var(--purple)">${plan.name}</div>
-      ${rows||'<p style="font-size:12px;color:var(--muted)">No workouts set yet</p>'}
+      ${rows || '<p style="font-size:12px;color:var(--muted)">No workouts set yet</p>'}
     </div>`;
   }).join('');
   document.getElementById('load-plan-overlay').classList.add('show');
