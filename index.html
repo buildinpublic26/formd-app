@@ -318,6 +318,9 @@ textarea{resize:none;line-height:1.5}
   <div class="topbar">
     <div class="topbar-title">F<span>O</span>RMD</div>
     <div class="topbar-right">
+      <div id="offline-badge" style="display:none;align-items:center;gap:4px;background:rgba(244,162,97,.15);border:1px solid var(--orange);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;color:var(--orange)">
+        <span>●</span> Offline
+      </div>
       <span class="topbar-user" id="user-label"></span>
       <button class="btn-signout" onclick="confirmSignOut()">Sign out</button>
     </div>
@@ -684,7 +687,16 @@ textarea{resize:none;line-height:1.5}
       <div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <label class="form-label">Exercises</label>
-          <button class="btn-sm" onclick="addPlanExercise()">+ Add exercise</button>
+          <div style="display:flex;gap:6px">
+            <button class="btn-sm" onclick="openCopyDayPicker()" title="Copy exercises from another day in this programme">📋 Copy day</button>
+            <button class="btn-sm" onclick="addPlanExercise()">+ Add exercise</button>
+          </div>
+        </div>
+        <!-- Copy day picker (inline dropdown) -->
+        <div id="copy-day-picker" style="display:none;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:10px">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Copy exercises from:</div>
+          <div id="copy-day-options" style="display:flex;flex-direction:column;gap:6px"></div>
+          <button class="btn-ghost" onclick="document.getElementById('copy-day-picker').style.display='none'" style="margin-top:8px;font-size:11px">Cancel</button>
         </div>
         <div id="plan-ex-builder"></div>
       </div>
@@ -749,7 +761,7 @@ textarea{resize:none;line-height:1.5}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 // ── CONFIG ───────────────────────────────────────────────────
-const SUPABASE_URL = 'https://adwydtcnczltiwqjnnts.supabase.co';
+const SUPABASE_URL = 'https://adwydtcnczltiwqjnnts.supabase.coL';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3lkdGNuY3psdGl3cWpubnRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNzc0NjIsImV4cCI6MjA5Mzc1MzQ2Mn0.zDGaI9cfhLxmfZvIBFzz_q3uqum_9R5DiUixaWKZW1c';
 
 // ── HYROX STATIONS ───────────────────────────────────────────
@@ -905,7 +917,7 @@ function onExInput(val){
   list.classList.add('show');
 }
 
-function pickExercise(name, group, isHyrox){
+async function pickExercise(name, group, isHyrox){
   document.getElementById('ex-name').value=name;
   hideAC();
   if(isHyrox === 'hyrox'){
@@ -915,8 +927,62 @@ function pickExercise(name, group, isHyrox){
     const btn = document.querySelector('.mt-tab:nth-child(2)');
     setMetricType('cardio', btn);
   } else {
-    // Show progression suggestion for strength exercises
     showProgressionTip(name);
+  }
+  // Auto-fill sets from last session
+  await autoFillFromLastSession(name);
+}
+
+async function autoFillFromLastSession(name) {
+  if(!currentUser) return;
+  // Fetch the last logged sets for this exercise
+  const { data } = await sb
+    .from('exercises')
+    .select('reps, weight_kg, weight_unit, sets, notes')
+    .eq('user_id', currentUser.id)
+    .eq('exercise_name', name)
+    .order('created_at', { ascending: false })
+    .limit(10);
+
+  if(!data || !data.length) return;
+
+  // Group by sets number to reconstruct last session's set rows
+  const lastSets = [...data].reverse(); // oldest first within the limit
+  // Find the most recent contiguous block (same exercise in one session)
+  // Heuristic: take rows where sets = 1,2,3... in sequence from the most recent
+  const recent = data; // already newest-first
+  // Group: take while sets is increasing from 1
+  const setRows = [];
+  for(const row of recent){
+    if(row.sets === setRows.length + 1) setRows.push(row);
+    else if(row.sets === 1 && setRows.length > 0) break; // new session found
+    else if(row.sets === 1) setRows.push(row);
+    if(setRows.length >= 10) break;
+  }
+  if(!setRows.length) return;
+
+  // Reverse to chronological order (set 1 first)
+  setRows.reverse();
+
+  // Pre-fill currentSets with last session's data
+  currentSets = setRows.map(row => ({
+    reps:    row.reps     || '',
+    weight:  row.weight_kg ? String(row.weight_kg) : '',
+    unit:    row.weight_unit || 'kg',
+    notes:   row.notes    || '',
+    _type:   currentMetricType
+  }));
+
+  renderSets();
+
+  // Show tip
+  const tip = document.getElementById('progression-tip');
+  if(tip && setRows.length > 0){
+    const w = setRows[0].weight_kg;
+    const r = setRows[0].reps;
+    tip.textContent = `📋 Last session: ${setRows.length} set${setRows.length!==1?'s':''}, ${r||'—'} reps${w?' @ '+w+(setRows[0].weight_unit||'kg'):''}`;
+    tip.style.display='block';
+    setTimeout(()=>{ if(tip) tip.style.display='none'; }, 6000);
   }
 }
 function hideAC(){ document.getElementById('ac-list').classList.remove('show'); }
@@ -1148,19 +1214,31 @@ async function saveSession(){
   const btn=document.getElementById('save-btn');
   btn.disabled=true; btn.innerHTML='<div class="spinner"></div> Saving…';
 
-  const {data:sess,error:sErr}=await sb.from('workout_sessions').insert({
+  // Generate a local UUID so we can reference it offline
+  const localId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)+Math.random().toString(36).slice(2);
+  const sessPayload = {
+    id: localId,
     user_id:currentUser.id,
     session_type:document.getElementById('session-type').value,
     session_date:document.getElementById('session-date').value,
     notes:document.getElementById('session-notes').value.trim()||null
-  }).select().single();
+  };
 
-  if(sErr){toast('Error: '+sErr.message,true);btn.disabled=false;btn.innerHTML='Save workout session';return;}
+  let sessId = localId;
+  if(navigator.onLine){
+    const {data:sess,error:sErr}=await sb.from('workout_sessions').insert(sessPayload).select().single();
+    if(sErr){toast('Error: '+sErr.message,true);btn.disabled=false;btn.innerHTML='Save workout session';return;}
+    sessId = sess.id;
+  } else {
+    await queueWrite({table:'workout_sessions',method:'insert',payload:sessPayload});
+    toast('📥 Session queued — will sync when online');
+  }
 
   const exRows=[];
   currentExGroups.forEach(g=>g.sets.forEach((s,si)=>{
     const row={
-      session_id:sess.id, user_id:currentUser.id, exercise_name:g.name,
+      id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)+si,
+      session_id:sessId, user_id:currentUser.id, exercise_name:g.name,
       sets:si+1, weight_unit:document.getElementById('global-unit').value,
     };
     if(g._type==='strength'){
@@ -1169,7 +1247,7 @@ async function saveSession(){
     } else if(g._type==='cardio'){
       row.reps=s.distance?s.distance+(s.distUnit||'m'):null;
       row.notes=(s.time?'Time: '+s.time:'')+(s.notes?' '+s.notes:'');
-    } else { // hyrox
+    } else {
       row.reps=s.distance||null;
       row.weight_kg=parseFloat(s.weight)||null;
       row.notes=(s.time?'Time: '+s.time:'')+(s.notes?' · '+s.notes:'');
@@ -1177,7 +1255,11 @@ async function saveSession(){
     exRows.push(row);
   }));
 
-  await sb.from('exercises').insert(exRows);
+  if(navigator.onLine){
+    await sb.from('exercises').insert(exRows);
+  } else {
+    for(const row of exRows) await queueWrite({table:'exercises',method:'insert',payload:row});
+  }
   currentExGroups=[]; currentSets=[]; addSet();
   renderCurrentExercises();
   document.getElementById('session-notes').value='';
@@ -1195,10 +1277,18 @@ sb.auth.onAuthStateChange((_e,session)=>{
     document.getElementById('user-label').textContent=
       session.user.user_metadata?.display_name||session.user.email?.split('@')[0]||'';
     showPage('log');
+    setTimeout(()=>{ updateOnlineStatus(); syncPendingWrites(); }, 1000);
   } else {
     currentUser=null;
     document.getElementById('auth-screen').classList.add('active');
     document.getElementById('main-screen').classList.remove('active');
+  }
+});
+
+// Sync when app comes back into focus (e.g. phone unlocked)
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState==='visible' && currentUser && navigator.onLine){
+    syncPendingWrites();
   }
 });
 function switchAuthTab(tab){
@@ -1490,6 +1580,7 @@ function renderPlanExBuilder() {
   el.innerHTML = planExBuilder.map((ex, i) => {
     const isH = ex._type === 'hyrox';
     const isC = ex._type === 'cardio';
+    const isS = !isH && !isC;
     return `<div class="prog-ex-item">
       <div class="prog-ex-head">
         <div class="ac-wrap" style="flex:1;margin-right:8px">
@@ -1506,17 +1597,61 @@ function renderPlanExBuilder() {
         </select>
         <button class="set-del" style="margin-left:6px" onclick="removePlanEx(${i})">×</button>
       </div>
-      <div style="display:grid;grid-template-columns:${isC?'1fr 1fr 1fr':'1fr 1fr 1fr 1fr'};gap:6px;margin-top:8px">
-        ${!isC?`<div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">Sets</div>
-          <input class="set-inp" type="text" value="${ex.sets||'3'}" oninput="planExBuilder[${i}].sets=this.value" inputmode="numeric"></div>`:''}
-        ${!isC?`<div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">Reps</div>
-          <input class="set-inp" type="text" value="${ex.reps||'10'}" oninput="planExBuilder[${i}].reps=this.value"></div>`:''}
-        <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">${isC?'Intervals':'Distance'}</div>
-          <input class="set-inp" type="text" value="${ex.distance||''}" placeholder="${isC?'3':'1000m'}" oninput="planExBuilder[${i}].distance=this.value"></div>
-        <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">Target time</div>
-          <input class="set-inp" type="text" value="${ex.time||''}" placeholder="mm:ss" oninput="planExBuilder[${i}].time=this.value"></div>
-        ${isH||isC?`<div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">Load (kg)</div>
-          <input class="set-inp" type="text" value="${ex.weight||''}" placeholder="20" oninput="planExBuilder[${i}].weight=this.value" inputmode="decimal"></div>`:''}
+      <div style="display:grid;grid-template-columns:${isC?'1fr 1fr 1fr':isH?'1fr 1fr 1fr 1fr':'1fr 1fr 1fr 50px'};gap:5px;margin-top:8px">
+        ${isS?`
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:3px">Sets</div>
+            <input class="set-inp" type="text" value="${ex.sets||'3'}" oninput="planExBuilder[${i}].sets=this.value" inputmode="numeric">
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:3px">Reps</div>
+            <input class="set-inp" type="text" value="${ex.reps||'10'}" oninput="planExBuilder[${i}].reps=this.value">
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:3px">Weight</div>
+            <input class="set-inp" type="text" value="${ex.weight||''}" placeholder="BW/80" oninput="planExBuilder[${i}].weight=this.value" inputmode="decimal">
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:2px"> </div>
+            <select class="set-inp" style="padding:4px 2px;font-size:11px" onchange="planExBuilder[${i}].unit=this.value">
+              <option value="kg"  ${(ex.unit||'kg')==='kg' ?'selected':''}>kg</option>
+              <option value="lbs" ${ex.unit==='lbs'        ?'selected':''}>lbs</option>
+              <option value="BW"  ${ex.unit==='BW'         ?'selected':''}>BW</option>
+            </select>
+          </div>
+        `:''}
+        ${isH?`
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:3px">Sets</div>
+            <input class="set-inp" type="text" value="${ex.sets||'1'}" oninput="planExBuilder[${i}].sets=this.value" inputmode="numeric">
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:3px">Distance/Reps</div>
+            <input class="set-inp" type="text" value="${ex.distance||''}" placeholder="1000m" oninput="planExBuilder[${i}].distance=this.value">
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:3px">Load (kg)</div>
+            <input class="set-inp" type="text" value="${ex.weight||''}" placeholder="20" oninput="planExBuilder[${i}].weight=this.value" inputmode="decimal">
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:3px">Target time</div>
+            <input class="set-inp" type="text" value="${ex.time||''}" placeholder="mm:ss" oninput="planExBuilder[${i}].time=this.value">
+          </div>
+        `:''}
+        ${isC?`
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:3px">Intervals</div>
+            <input class="set-inp" type="text" value="${ex.sets||'1'}" oninput="planExBuilder[${i}].sets=this.value" inputmode="numeric">
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:3px">Distance</div>
+            <input class="set-inp" type="text" value="${ex.distance||''}" placeholder="1000m" oninput="planExBuilder[${i}].distance=this.value">
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:3px">Target time</div>
+            <input class="set-inp" type="text" value="${ex.time||''}" placeholder="mm:ss" oninput="planExBuilder[${i}].time=this.value">
+          </div>
+        `:''}
       </div>
       <div style="margin-top:6px">
         <input class="set-inp" type="text" value="${ex.notes||''}" placeholder="Notes…" style="width:100%;font-size:12px" oninput="planExBuilder[${i}].notes=this.value">
@@ -1524,6 +1659,7 @@ function renderPlanExBuilder() {
     </div>`;
   }).join('');
 }
+
 
 function filterPlanAC(input, idx) {
   const val = input.value;
@@ -1547,7 +1683,7 @@ function pickPlanEx(idx, name, type) {
   renderPlanExBuilder();
 }
 
-async function saveDayWorkout() {
+async async function saveDayWorkout() {
   const type  = document.getElementById('day-type').value;
   const valid = planExBuilder.filter(e => e.name.trim());
   const plan  = plansCache[editingPlanIndex];
@@ -1575,7 +1711,7 @@ function loadDayIntoLog(planIndex, day) {
   // Load exercises — expand sets from plan (each plan ex has sets/reps/weight as targets)
   // If plan has a "sets" count, create that many individual set rows pre-filled with the targets
   currentExGroups = workout.exercises.filter(e => e.name).map(ex => {
-    const type    = ex._type || 'strength';
+    const type     = ex._type || 'strength';
     const setCount = parseInt(ex.sets) || 1;
     let sets = [];
     for(let i = 0; i < setCount; i++){
@@ -1584,11 +1720,14 @@ function loadDayIntoLog(planIndex, day) {
       } else if(type === 'hyrox'){
         sets.push({ distance: ex.distance||'', weight: ex.weight||'', time: ex.time||'', notes: ex.notes||'', _type: 'hyrox' });
       } else {
+        // Include weight and unit from plan preset — user can modify before saving
         sets.push({ reps: ex.reps||'', weight: ex.weight||'', unit: ex.unit||'kg', notes: ex.notes||'', _type: 'strength' });
       }
     }
     return { name: ex.name, _type: type, sets };
   });
+  // Show a tip that weights are editable
+  setTimeout(()=>toast('✏️ Weights pre-filled from plan — edit any field before saving'), 400);
 
   renderCurrentExercises();
   renderHyroxBanner();
@@ -1623,6 +1762,49 @@ async function openLoadPlanModal() {
     </div>`;
   }).join('');
   document.getElementById('load-plan-overlay').classList.add('show');
+}
+
+// ── COPY DAY TO DAY ──────────────────────────────────────────
+function openCopyDayPicker() {
+  const picker   = document.getElementById('copy-day-picker');
+  const optionsEl = document.getElementById('copy-day-options');
+  const plan     = plansCache[editingPlanIndex];
+  if (!plan) return;
+
+  // Show all OTHER days in this programme that have exercises
+  const otherDays = plan.schedule.filter(d => d !== editingDayKey && plan.days?.[d]?.exercises?.length);
+  if (!otherDays.length) {
+    toast('No other days with exercises to copy from', true);
+    return;
+  }
+
+  optionsEl.innerHTML = otherDays.map(day => {
+    const w         = plan.days[day];
+    const exNames   = w.exercises.slice(0, 3).map(e => e.name).join(', ');
+    const moreCount = w.exercises.length > 3 ? ` +${w.exercises.length - 3} more` : '';
+    return `<div onclick="copyDayWorkout('${day}')"
+      style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer">
+      <div style="font-size:13px;font-weight:700">${day} — ${w.type}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">${exNames}${moreCount}</div>
+    </div>`;
+  }).join('');
+
+  picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
+}
+
+function copyDayWorkout(fromDay) {
+  const plan       = plansCache[editingPlanIndex];
+  const sourceDay  = plan?.days?.[fromDay];
+  if (!sourceDay) return;
+
+  // Deep copy exercises from source day into builder
+  planExBuilder = sourceDay.exercises.map(e => ({ ...e }));
+  // Also set the workout type
+  document.getElementById('day-type').value = sourceDay.type;
+  // Hide picker
+  document.getElementById('copy-day-picker').style.display = 'none';
+  renderPlanExBuilder();
+  toast(`Copied ${planExBuilder.length} exercise${planExBuilder.length!==1?'s':''} from ${fromDay}`);
 }
 
 // ── HISTORY ───────────────────────────────────────────────────
@@ -1887,7 +2069,7 @@ For Hyrox training include:
 - Key nutrition timing around training sessions`:'Include: weekly split, 5-7 exercises per session with sets/reps, progression notes, cardio rec, nutrition tip.'}
 Under 650 words. Use markdown headings.`;
   try{
-    const res=await fetch('/functions/ai-plan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    const res=await fetch('/.netlify/functions/ai-plan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
     if(!res.ok) throw new Error((await res.json()).error||'Error '+res.status);
     const {text}=await res.json();
     out.innerHTML=text.replace(/^###(.+)$/gm,'<h3>$1</h3>').replace(/^##(.+)$/gm,'<h3>$1</h3>')
@@ -1988,7 +2170,7 @@ async function saveHistEdit() {
 
 // Feature A: Progressive overload suggestion
 // After 3+ sessions on same exercise, suggest +2.5kg if all sets completed
-async function getProgressionSuggestion(exerciseName) {
+async async function getProgressionSuggestion(exerciseName) {
   const { data } = await sb.from('exercises').select('weight_kg, reps, sets')
     .eq('user_id', currentUser.id)
     .eq('exercise_name', exerciseName)
@@ -2003,7 +2185,7 @@ async function getProgressionSuggestion(exerciseName) {
 }
 
 // Show progression tip when exercise is picked
-async function showProgressionTip(name) {
+async async function showProgressionTip(name) {
   const suggestion = await getProgressionSuggestion(name);
   if (!suggestion) return;
   const el = document.getElementById('progression-tip');
@@ -2059,19 +2241,143 @@ function getThisWeekRange() {
   return mon;
 }
 
-// ── SERVICE WORKER ────────────────────────────────────────────
+// ── OFFLINE SYNC ENGINE ──────────────────────────────────────
+// IndexedDB stores pending writes when offline; syncs on reconnect
+
+const DB_NAME='formd_offline', DB_VER=1, STORE='queue';
+let offlineDB=null;
+
+function openOfflineDB(){
+  return new Promise((res,rej)=>{
+    if(offlineDB){res(offlineDB);return;}
+    const req=indexedDB.open(DB_NAME,DB_VER);
+    req.onupgradeneeded=e=>e.target.result.createObjectStore(STORE,{keyPath:'id',autoIncrement:true});
+    req.onsuccess=e=>{offlineDB=e.target.result;res(offlineDB);};
+    req.onerror=()=>rej(req.error);
+  });
+}
+
+async function queueWrite(operation){
+  // operation: {table, method, payload, matchCol, matchVal}
+  const db=await openOfflineDB();
+  return new Promise((res,rej)=>{
+    const tx=db.transaction(STORE,'readwrite');
+    tx.objectStore(STORE).add({...operation, ts:Date.now()});
+    tx.oncomplete=()=>res();
+    tx.onerror=()=>rej(tx.error);
+  });
+}
+
+async function getPendingWrites(){
+  const db=await openOfflineDB();
+  return new Promise((res,rej)=>{
+    const tx=db.transaction(STORE,'readonly');
+    const req=tx.objectStore(STORE).getAll();
+    req.onsuccess=()=>res(req.result);
+    req.onerror=()=>rej(req.error);
+  });
+}
+
+async function clearWrite(id){
+  const db=await openOfflineDB();
+  return new Promise((res,rej)=>{
+    const tx=db.transaction(STORE,'readwrite');
+    tx.objectStore(STORE).delete(id);
+    tx.oncomplete=()=>res();
+    tx.onerror=()=>rej(tx.error);
+  });
+}
+
+async function syncPendingWrites(){
+  if(!currentUser||!navigator.onLine) return;
+  const pending=await getPendingWrites();
+  if(!pending.length) return;
+  let synced=0;
+  for(const op of pending){
+    try{
+      if(op.method==='insert'){
+        await sb.from(op.table).insert(op.payload);
+      } else if(op.method==='update'){
+        await sb.from(op.table).update(op.payload).eq(op.matchCol,op.matchVal).eq('user_id',currentUser.id);
+      } else if(op.method==='delete'){
+        await sb.from(op.table).delete().eq(op.matchCol,op.matchVal).eq('user_id',currentUser.id);
+      }
+      await clearWrite(op.id);
+      synced++;
+    } catch(e){
+      console.warn('Sync failed for op',op.id,e.message);
+    }
+  }
+  if(synced>0){
+    toast(`✓ Synced ${synced} offline action${synced>1?'s':''}`);
+    // Refresh current page data
+    if(currentPage==='history')    loadHistory();
+    if(currentPage==='metrics')    loadMetrics();
+    if(currentPage==='milestones') loadMilestones();
+    if(currentPage==='stats')      loadStats();
+  }
+}
+
+// Online/offline status indicator
+function updateOnlineStatus(){
+  const el=document.getElementById('offline-badge');
+  if(!el) return;
+  if(navigator.onLine){
+    el.style.display='none';
+    syncPendingWrites(); // Try to flush queue when back online
+  } else {
+    el.style.display='flex';
+  }
+}
+window.addEventListener('online',  updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+
+// Offline-aware Supabase write wrapper
+async function sbWrite(table, method, payload, matchCol=null, matchVal=null){
+  if(navigator.onLine){
+    try{
+      if(method==='insert') return await sb.from(table).insert(payload).select().single();
+      if(method==='update') return await sb.from(table).update(payload).eq(matchCol,matchVal).eq('user_id',currentUser.id);
+      if(method==='delete') return await sb.from(table).delete().eq(matchCol,matchVal).eq('user_id',currentUser.id);
+    } catch(e){
+      console.warn('Online write failed, queuing',e.message);
+    }
+  }
+  // Offline — queue it
+  await queueWrite({table,method,payload,matchCol,matchVal});
+  toast('📥 Saved offline — will sync when back online');
+  return {data:payload, error:null};
+}
+
+// ── SERVICE WORKER (app shell cache) ─────────────────────────
 if('serviceWorker' in navigator){
-  const sw=`const C='formd-v6';
-self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll(['/']).then(()=>self.skipWaiting()))));
-self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+  const sw=`const C='formd-v7';
+const SHELL=['/'];
+self.addEventListener('install',e=>e.waitUntil(
+  caches.open(C).then(ca=>ca.addAll(SHELL)).then(()=>self.skipWaiting())
+));
+self.addEventListener('activate',e=>e.waitUntil(
+  caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim())
+));
 self.addEventListener('fetch',e=>{
-  if(e.request.method!=='GET')return;
+  if(e.request.method!=='GET') return;
   const u=new URL(e.request.url);
-  if(u.hostname.includes('supabase')||u.hostname.includes('anthropic')||u.pathname.includes('netlify'))return;
-  e.respondWith(fetch(e.request).then(r=>{const c=r.clone();caches.open(C).then(ca=>ca.put(e.request,c));return r;}).catch(()=>caches.match(e.request)));
+  // Never intercept API calls — let them fail naturally so offline queue kicks in
+  if(u.hostname.includes('supabase')||u.hostname.includes('anthropic')||u.pathname.includes('/functions/')) return;
+  e.respondWith(
+    fetch(e.request)
+      .then(r=>{
+        const clone=r.clone();
+        caches.open(C).then(ca=>ca.put(e.request,clone));
+        return r;
+      })
+      .catch(()=>caches.match(e.request))
+  );
 });`;
   const blob=new Blob([sw],{type:'application/javascript'});
-  navigator.serviceWorker.register(URL.createObjectURL(blob),{scope:'/'}).catch(()=>{});
+  navigator.serviceWorker.register(URL.createObjectURL(blob),{scope:'/'})
+    .then(()=>{ setTimeout(updateOnlineStatus, 500); })
+    .catch(()=>{});
 }
 </script>
 </body>
