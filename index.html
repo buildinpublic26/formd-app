@@ -784,8 +784,8 @@ textarea{resize:none;line-height:1.5}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 // ── CONFIG ───────────────────────────────────────────────────
-const SUPABASE_URL = 'https://adwydtcnczltiwqjnnts.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3lkdGNuY3psdGl3cWpubnRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNzc0NjIsImV4cCI6MjA5Mzc1MzQ2Mn0.zDGaI9cfhLxmfZvIBFzz_q3uqum_9R5DiUixaWKZW1c';
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
 
 // ── HYROX STATIONS ───────────────────────────────────────────
 // Official Hyrox race format: 8 x 1km runs + 8 functional stations
@@ -1321,7 +1321,7 @@ function showResetPasswordScreen(){
   document.getElementById('reset-screen').classList.add('active');
 }
 
-async function doResetPassword(){
+async async function doResetPassword(){
   const pw1 = document.getElementById('reset-pw1').value;
   const pw2 = document.getElementById('reset-pw2').value;
   const msg  = document.getElementById('reset-msg');
@@ -1348,8 +1348,9 @@ function switchAuthTab(tab){
   document.querySelector(`.auth-tab[onclick*="${tab}"]`).classList.add('active');
   document.getElementById('login-form').style.display=tab==='login'?'flex':'none';
   document.getElementById('signup-form').style.display=tab==='signup'?'flex':'none';
+  document.getElementById('forgot-form').style.display='none';
 }
-async function doLogin(){
+async async function doLogin(){
   const email = document.getElementById('login-email').value.trim();
   const pw    = document.getElementById('login-pw').value;
   const msg   = document.getElementById('login-msg');
@@ -1392,7 +1393,7 @@ function hideForgotPassword(){
   document.getElementById('login-form').style.display   = 'flex';
 }
 
-async function doForgotPassword(){
+async async function doForgotPassword(){
   const email = document.getElementById('forgot-email').value.trim();
   const msg   = document.getElementById('forgot-msg');
   if(!email){ msg.textContent='Enter your email address'; msg.className='auth-msg error'; return; }
@@ -1413,7 +1414,7 @@ async function doForgotPassword(){
     msg.className='auth-msg error';
   }
 }
-async function doSignup(){
+async async function doSignup(){
   const name=document.getElementById('signup-name').value.trim();
   const email=document.getElementById('signup-email').value.trim();
   const pw=document.getElementById('signup-pw').value;
@@ -1425,7 +1426,7 @@ async function doSignup(){
   else{msg.textContent='Check your email to confirm, then log in.';msg.className='auth-msg success';}
 }
 function confirmSignOut(){ document.getElementById('signout-overlay').classList.add('show'); }
-async function doSignOut(){
+async async function doSignOut(){
   closeOverlay('signout-overlay');
   await sb.auth.signOut();
   currentExGroups=[]; currentSets=[]; addSet();
