@@ -1887,7 +1887,7 @@ For Hyrox training include:
 - Key nutrition timing around training sessions`:'Include: weekly split, 5-7 exercises per session with sets/reps, progression notes, cardio rec, nutrition tip.'}
 Under 650 words. Use markdown headings.`;
   try{
-    const res=await fetch('/.netlify/functions/ai-plan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    const res=await fetch('/functions/ai-plan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
     if(!res.ok) throw new Error((await res.json()).error||'Error '+res.status);
     const {text}=await res.json();
     out.innerHTML=text.replace(/^###(.+)$/gm,'<h3>$1</h3>').replace(/^##(.+)$/gm,'<h3>$1</h3>')
