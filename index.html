@@ -157,6 +157,15 @@ textarea{resize:none;line-height:1.5}
 .ex-set-row:last-child{border-bottom:none}
 .ex-set-row .wt{color:var(--teal);font-weight:700}
 .ex-set-row .hyrox-val{color:var(--hyrox);font-weight:700}
+/* Inline editable set rows (in current session) */
+.ex-set-edit-row{display:grid;grid-template-columns:20px 1fr 1fr 1fr 1fr 20px;gap:4px;align-items:center;padding:5px 10px;border-bottom:1px solid var(--border)}
+.ex-set-edit-row:last-child{border-bottom:none}
+.ex-set-edit-row.cardio-edit{grid-template-columns:20px 1fr 60px 1fr 20px}
+.ex-set-edit-row.hyrox-edit{grid-template-columns:20px 1fr 1fr 1fr 20px}
+.set-edit-num{font-size:10px;font-weight:700;color:var(--muted);text-align:center}
+.set-edit-inp{background:var(--card2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:12px;padding:4px 6px;text-align:center;width:100%;outline:none;font-family:inherit;min-width:0}
+.set-edit-inp:focus{border-color:var(--teal)}
+.set-edit-sel{background:var(--card2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:11px;padding:4px 2px;width:100%;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none;text-align:center;min-width:0}
 
 /* HYROX BADGE */
 .badge-hyrox{display:inline-flex;align-items:center;gap:4px;background:rgba(255,107,53,.15);color:var(--hyrox);font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;letter-spacing:.5px;text-transform:uppercase;border:1px solid rgba(255,107,53,.3)}
@@ -241,6 +250,9 @@ textarea{resize:none;line-height:1.5}
 .freq-bar-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
 .freq-bar-bg{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
 .freq-bar-fill{height:4px;background:var(--red);border-radius:2px}
+/* Rest timer pulse */
+@keyframes pulse-border{0%,100%{border-color:var(--teal);}50%{border-color:var(--green);}}
+#rest-timer-display{animation:pulse-border 1s ease-in-out infinite}
 
 /* AI */
 .goal-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
@@ -395,10 +407,30 @@ textarea{resize:none;line-height:1.5}
             <div id="sets-container"></div>
           </div>
 
+          <!-- Progression tip -->
+          <div id="progression-tip" style="display:none;font-size:12px;color:var(--teal);background:var(--teal-dim);border-radius:6px;padding:7px 10px;margin-top:2px"></div>
+
           <button class="btn btn-outline" onclick="addExercise()">
             <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" fill="none" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
             Add to session
           </button>
+
+          <!-- Rest timer -->
+          <div id="rest-timer-display" style="display:none;align-items:center;justify-content:space-between;background:var(--card2);border:1px solid var(--teal);border-radius:8px;padding:10px 14px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:18px">⏱</span>
+              <div>
+                <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Rest timer</div>
+                <div class="rest-time" style="font-size:22px;font-weight:800;color:var(--teal);line-height:1">0:00</div>
+              </div>
+            </div>
+            <button onclick="stopRestTimer()" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);padding:5px 10px;cursor:pointer;font-size:12px;font-family:inherit">Stop</button>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn-sm" style="flex:1" onclick="startRestTimer(60)">⏱ 60s rest</button>
+            <button class="btn-sm" style="flex:1" onclick="startRestTimer(90)">⏱ 90s rest</button>
+            <button class="btn-sm" style="flex:1" onclick="startRestTimer(120)">⏱ 2m rest</button>
+          </div>
         </div>
       </div>
 
@@ -677,6 +709,41 @@ textarea{resize:none;line-height:1.5}
   </div>
 </div>
 
+<!-- HISTORY EDIT SESSION OVERLAY -->
+<div class="overlay" id="hist-edit-overlay">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Edit Session</div>
+    <div class="modal-sub" id="hist-edit-sub"></div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="row2">
+        <div class="form-group">
+          <label class="form-label">Workout type</label>
+          <select id="hist-edit-type">
+            <option>Push Day</option><option>Pull Day</option><option>Leg Day</option>
+            <option>Full Body</option><option>Upper Body</option><option>Lower Body</option>
+            <option>Cardio</option><option>Core</option>
+            <option>Hyrox Training</option><option>Hyrox Race Simulation</option><option>Custom</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input type="date" id="hist-edit-date">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Session notes</label>
+        <input type="text" id="hist-edit-notes" placeholder="Session notes…">
+      </div>
+      <div id="hist-edit-exercises" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeOverlay('hist-edit-overlay')">Cancel</button>
+      <button class="btn btn-red" onclick="saveHistEdit()">Save changes</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -841,13 +908,15 @@ function onExInput(val){
 function pickExercise(name, group, isHyrox){
   document.getElementById('ex-name').value=name;
   hideAC();
-  // Auto-switch metric type based on exercise group
   if(isHyrox === 'hyrox'){
     const btn = document.querySelector('.mt-tab:nth-child(3)');
     setMetricType('hyrox', btn);
   } else if(['Cardio'].includes(group)){
     const btn = document.querySelector('.mt-tab:nth-child(2)');
     setMetricType('cardio', btn);
+  } else {
+    // Show progression suggestion for strength exercises
+    showProgressionTip(name);
   }
 }
 function hideAC(){ document.getElementById('ac-list').classList.remove('show'); }
@@ -993,23 +1062,84 @@ function renderCurrentExercises(){
     const isHyrox = g._type==='hyrox';
     const isCardio = g._type==='cardio';
     const summary = g.sets.length+' set'+(g.sets.length!==1?'s':'');
-    const setRows=g.sets.map((s,si)=>`
-      <div class="ex-set-row">
-        <span>Set ${si+1}: ${formatSetDisplay(s)}</span>
-        <span class="${isHyrox?'hyrox-val':'wt'}">${formatSetWeight(s)}</span>
-        <button onclick="removeSetFromGroup(${gi},${si})" class="set-del" style="font-size:13px;margin-left:6px">×</button>
-      </div>`).join('');
+
+    // Each set rendered as inline-editable row
+    const setRows=g.sets.map((s,si)=>{
+      if(isCardio){
+        return `<div class="ex-set-edit-row">
+          <span class="set-edit-num">${si+1}</span>
+          <input class="set-edit-inp" type="text" value="${s.distance||''}" placeholder="dist"
+            oninput="currentExGroups[${gi}].sets[${si}].distance=this.value" title="Distance">
+          <select class="set-edit-sel" onchange="currentExGroups[${gi}].sets[${si}].distUnit=this.value">
+            <option value="m" ${s.distUnit==='m'?'selected':''}>m</option>
+            <option value="km" ${s.distUnit==='km'?'selected':''}>km</option>
+            <option value="mi" ${s.distUnit==='mi'?'selected':''}>mi</option>
+          </select>
+          <input class="set-edit-inp" type="text" value="${s.time||''}" placeholder="mm:ss"
+            oninput="currentExGroups[${gi}].sets[${si}].time=this.value" title="Time">
+          <button onclick="removeSetFromGroup(${gi},${si})" class="set-del">×</button>
+        </div>`;
+      } else if(isHyrox){
+        return `<div class="ex-set-edit-row">
+          <span class="set-edit-num">${si+1}</span>
+          <input class="set-edit-inp" type="text" value="${s.distance||''}" placeholder="dist/reps"
+            oninput="currentExGroups[${gi}].sets[${si}].distance=this.value" title="Distance or reps">
+          <input class="set-edit-inp" type="text" value="${s.weight||''}" placeholder="kg load"
+            oninput="currentExGroups[${gi}].sets[${si}].weight=this.value" inputmode="decimal" title="Load kg">
+          <input class="set-edit-inp" type="text" value="${s.time||''}" placeholder="mm:ss"
+            oninput="currentExGroups[${gi}].sets[${si}].time=this.value" title="Time">
+          <button onclick="removeSetFromGroup(${gi},${si})" class="set-del">×</button>
+        </div>`;
+      } else {
+        // Strength — reps, weight, unit (inc BW), notes
+        return `<div class="ex-set-edit-row">
+          <span class="set-edit-num">${si+1}</span>
+          <input class="set-edit-inp" type="text" value="${s.reps||''}" placeholder="reps"
+            oninput="currentExGroups[${gi}].sets[${si}].reps=this.value" inputmode="numeric" title="Reps">
+          <input class="set-edit-inp" type="text" value="${s.weight||''}" placeholder="wt"
+            oninput="currentExGroups[${gi}].sets[${si}].weight=this.value" inputmode="decimal"
+            title="Weight (leave blank for BW)">
+          <select class="set-edit-sel" onchange="currentExGroups[${gi}].sets[${si}].unit=this.value">
+            <option value="kg"  ${(s.unit||'kg')==='kg' ?'selected':''}>kg</option>
+            <option value="lbs" ${s.unit==='lbs'        ?'selected':''}>lbs</option>
+            <option value="BW"  ${s.unit==='BW'         ?'selected':''}>BW</option>
+          </select>
+          <input class="set-edit-inp" type="text" value="${s.notes||''}" placeholder="note"
+            oninput="currentExGroups[${gi}].sets[${si}].notes=this.value" title="Notes">
+          <button onclick="removeSetFromGroup(${gi},${si})" class="set-del">×</button>
+        </div>`;
+      }
+    }).join('');
+
     return `<div class="ex-group">
       <div class="ex-group-head">
         <div>
           <div class="ex-group-name">${g.name} ${isHyrox?'<span class="badge-hyrox" style="font-size:9px;padding:1px 5px">HYROX</span>':''}</div>
-          <div class="ex-group-sub">${summary}${isCardio?' · distance/time':isHyrox?' · Hyrox station':' · strength'}</div>
+          <div class="ex-group-sub">${summary}${isCardio?' · distance/time':isHyrox?' · Hyrox station':' · strength'} <span style="color:var(--teal);font-size:10px">— tap fields to edit</span></div>
         </div>
-        <button onclick="removeExGroup(${gi})" class="btn-ghost" style="color:var(--red)">Remove</button>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button onclick="addSetToGroup(${gi})" class="btn-ghost" style="font-size:11px;color:var(--teal);padding:3px 6px">+ Set</button>
+          <button onclick="removeExGroup(${gi})" class="btn-ghost" style="color:var(--red)">Remove</button>
+        </div>
       </div>
       ${setRows}
     </div>`;
   }).join('');
+}
+
+function addSetToGroup(gi){
+  const g = currentExGroups[gi];
+  const last = g.sets.length ? g.sets[g.sets.length-1] : null;
+  let newSet;
+  if(g._type==='cardio'){
+    newSet={distance:last?.distance||'',distUnit:last?.distUnit||'m',time:'',notes:'',_type:'cardio'};
+  } else if(g._type==='hyrox'){
+    newSet={distance:last?.distance||'',weight:last?.weight||'',time:'',notes:'',_type:'hyrox'};
+  } else {
+    newSet={reps:last?.reps||'',weight:last?.weight||'',unit:last?.unit||'kg',notes:'',_type:'strength'};
+  }
+  g.sets.push(newSet);
+  renderCurrentExercises();
 }
 
 // ── SAVE SESSION ──────────────────────────────────────────────
@@ -1441,17 +1571,29 @@ function loadDayIntoLog(planIndex, day) {
   const workout = plan?.days?.[day];
   if (!workout) { toast('No workout set for this day', true); return; }
   document.getElementById('session-type').value = workout.type;
-  currentExGroups = workout.exercises.filter(e => e.name).map(ex => ({
-    name:  ex.name,
-    _type: ex._type || 'strength',
-    sets:  [{ reps: ex.reps || '', weight: ex.weight || '', distance: ex.distance || '',
-              time: ex.time || '', notes: ex.notes || '', unit: ex.unit || 'kg',
-              distUnit: 'm', _type: ex._type || 'strength' }]
-  }));
+
+  // Load exercises — expand sets from plan (each plan ex has sets/reps/weight as targets)
+  // If plan has a "sets" count, create that many individual set rows pre-filled with the targets
+  currentExGroups = workout.exercises.filter(e => e.name).map(ex => {
+    const type    = ex._type || 'strength';
+    const setCount = parseInt(ex.sets) || 1;
+    let sets = [];
+    for(let i = 0; i < setCount; i++){
+      if(type === 'cardio'){
+        sets.push({ distance: ex.distance||'', distUnit: ex.distUnit||'m', time: ex.time||'', notes: ex.notes||'', _type: 'cardio' });
+      } else if(type === 'hyrox'){
+        sets.push({ distance: ex.distance||'', weight: ex.weight||'', time: ex.time||'', notes: ex.notes||'', _type: 'hyrox' });
+      } else {
+        sets.push({ reps: ex.reps||'', weight: ex.weight||'', unit: ex.unit||'kg', notes: ex.notes||'', _type: 'strength' });
+      }
+    }
+    return { name: ex.name, _type: type, sets };
+  });
+
   renderCurrentExercises();
   renderHyroxBanner();
   showPage('log');
-  toast('Loaded: ' + workout.type);
+  toast('✓ Loaded: ' + workout.type + ' — edit weights and reps before saving');
 }
 
 async function openLoadPlanModal() {
@@ -1518,9 +1660,11 @@ async function loadHistory(){
         ${sets.map((st,i)=>{
           const timeNote=st.notes?.match(/Time: ([^ ·]+)/)?.[1];
           const dist=st.reps;
+          const wt=st.weight_kg?st.weight_kg+(st.weight_unit||'kg'):'BW';
+          const isStrength = !isH && !dist?.match(/m$|km$/);
           return `<div class="hist-set-line">
-            <span>Set ${i+1}: ${dist||'—'}${st.notes&&!st.notes.startsWith('Time:')?(' · '+st.notes.replace(/^Time: [^ ·]+ · ?/,'')):''}</span>
-            <span style="color:${isH?'var(--hyrox)':'var(--teal)'};font-weight:700">${timeNote||''}</span>
+            <span>Set ${i+1}: ${isH?(dist||'—'):(dist||wt)+(isStrength&&st.weight_kg?' · '+wt:'')}</span>
+            <span style="color:${isH?'var(--hyrox)':'var(--teal)'};font-weight:700">${timeNote||(isStrength&&st.weight_kg?wt:'')}</span>
           </div>`;
         }).join('')}
       </div>`;
@@ -1536,8 +1680,9 @@ async function loadHistory(){
       <div class="sess-chips">${chips}${moreChips}</div>
       <div class="sess-detail" id="det-${s.id}">
         ${detail}
-        <div style="margin-top:10px;display:flex;justify-content:flex-end">
-          <button class="btn-ghost" style="color:var(--red)" onclick="deleteSess('${s.id}')">Delete session</button>
+        <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center">
+          <button class="btn-ghost" style="color:var(--teal);font-size:12px" onclick="openHistEdit('${s.id}','${s.session_type}','${s.session_date}')">✏️ Edit session</button>
+          <button class="btn-ghost" style="color:var(--red)" onclick="deleteSess('${s.id}')">Delete</button>
         </div>
       </div>
     </div>`;
@@ -1752,9 +1897,171 @@ Under 650 words. Use markdown headings.`;
   btn.disabled=false; btn.innerHTML='⚡ Regenerate plan';
 }
 
+// ── HISTORY EDIT ─────────────────────────────────────────────
+let histEditSessionId = null;
+let histEditExercises = []; // [{id, exercise_name, sets, reps, weight_kg, weight_unit, notes}]
+
+async function openHistEdit(sessionId, sessionType, sessionDate) {
+  histEditSessionId = sessionId;
+  histEditExercises = [];
+  document.getElementById('hist-edit-type').value = sessionType;
+  document.getElementById('hist-edit-date').value = sessionDate;
+  document.getElementById('hist-edit-sub').textContent = 'Editing: ' + sessionType + ' — ' + sessionDate;
+  document.getElementById('hist-edit-notes').value = '';
+
+  // Load session notes
+  const { data: sess } = await sb.from('workout_sessions').select('notes').eq('id', sessionId).single();
+  if (sess?.notes) document.getElementById('hist-edit-notes').value = sess.notes;
+
+  // Load exercises for this session
+  const { data: exs } = await sb.from('exercises').select('*').eq('session_id', sessionId).order('sets');
+  histEditExercises = exs || [];
+  renderHistEditExercises();
+  document.getElementById('hist-edit-overlay').classList.add('show');
+}
+
+function renderHistEditExercises() {
+  const el = document.getElementById('hist-edit-exercises');
+  // Group by exercise name
+  const groups = {};
+  histEditExercises.forEach(e => {
+    if (!groups[e.exercise_name]) groups[e.exercise_name] = [];
+    groups[e.exercise_name].push(e);
+  });
+  el.innerHTML = Object.keys(groups).map(name => {
+    const sets = groups[name];
+    const isH  = EX_DB.find(e => e.n === name)?.h;
+    return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden">
+      <div style="background:var(--card);padding:8px 12px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px">
+        ${name} ${isH ? '<span class="badge-hyrox" style="font-size:9px">HYROX</span>' : ''}
+      </div>
+      ${sets.map((st, i) => {
+        const idx = histEditExercises.indexOf(st);
+        return `<div style="display:grid;grid-template-columns:20px 1fr 1fr 60px 1fr;gap:4px;align-items:center;padding:6px 10px;border-bottom:1px solid var(--border)">
+          <span style="font-size:10px;font-weight:700;color:var(--muted);text-align:center">${i+1}</span>
+          <input class="set-edit-inp" type="text" value="${st.reps||''}" placeholder="reps/dist"
+            oninput="histEditExercises[${idx}].reps=this.value" title="Reps or distance">
+          <input class="set-edit-inp" type="text" value="${st.weight_kg||''}" placeholder="weight"
+            oninput="histEditExercises[${idx}].weight_kg=this.value" inputmode="decimal" title="Weight">
+          <select class="set-edit-sel" onchange="histEditExercises[${idx}].weight_unit=this.value">
+            <option value="kg"  ${(st.weight_unit||'kg')==='kg' ?'selected':''}>kg</option>
+            <option value="lbs" ${st.weight_unit==='lbs'        ?'selected':''}>lbs</option>
+            <option value="BW"  ${st.weight_unit==='BW'         ?'selected':''}>BW</option>
+          </select>
+          <input class="set-edit-inp" type="text" value="${st.notes||''}" placeholder="notes"
+            oninput="histEditExercises[${idx}].notes=this.value" title="Notes / time">
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+
+async function saveHistEdit() {
+  const btn = document.querySelector('#hist-edit-overlay .btn-red');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div>';
+
+  // Update session metadata
+  await sb.from('workout_sessions').update({
+    session_type: document.getElementById('hist-edit-type').value,
+    session_date: document.getElementById('hist-edit-date').value,
+    notes:        document.getElementById('hist-edit-notes').value.trim() || null
+  }).eq('id', histEditSessionId);
+
+  // Update each exercise row
+  for (const ex of histEditExercises) {
+    await sb.from('exercises').update({
+      reps:        ex.reps       || null,
+      weight_kg:   parseFloat(ex.weight_kg) || null,
+      weight_unit: ex.weight_unit || 'kg',
+      notes:       ex.notes      || null
+    }).eq('id', ex.id);
+  }
+
+  btn.disabled = false; btn.innerHTML = 'Save changes';
+  closeOverlay('hist-edit-overlay');
+  toast('Session updated! ✓');
+  loadHistory();
+  if (currentPage === 'stats') loadStats();
+}
+
+// ── SMART FEATURES ────────────────────────────────────────────
+
+// Feature A: Progressive overload suggestion
+// After 3+ sessions on same exercise, suggest +2.5kg if all sets completed
+async function getProgressionSuggestion(exerciseName) {
+  const { data } = await sb.from('exercises').select('weight_kg, reps, sets')
+    .eq('user_id', currentUser.id)
+    .eq('exercise_name', exerciseName)
+    .order('created_at', { ascending: false })
+    .limit(9);
+  if (!data || data.length < 3) return null;
+  const weights = data.map(e => parseFloat(e.weight_kg)).filter(w => w > 0);
+  if (!weights.length) return null;
+  const lastWeight = weights[0];
+  const consistent = weights.slice(0, 3).every(w => w === lastWeight);
+  return consistent ? (lastWeight + 2.5).toFixed(1) : null;
+}
+
+// Show progression tip when exercise is picked
+async function showProgressionTip(name) {
+  const suggestion = await getProgressionSuggestion(name);
+  if (!suggestion) return;
+  const el = document.getElementById('progression-tip');
+  if (!el) return;
+  el.textContent = '💡 Last 3 sessions at same weight — try ' + suggestion + 'kg today?';
+  el.style.display = 'block';
+  setTimeout(() => { if(el) el.style.display = 'none'; }, 5000);
+}
+
+// Feature B: Rest timer
+let restTimerInterval = null;
+let restTimerSeconds  = 0;
+
+function startRestTimer(seconds) {
+  clearInterval(restTimerInterval);
+  restTimerSeconds = seconds;
+  const el = document.getElementById('rest-timer-display');
+  if (!el) return;
+  el.style.display = 'flex';
+  updateRestDisplay();
+  restTimerInterval = setInterval(() => {
+    restTimerSeconds--;
+    updateRestDisplay();
+    if (restTimerSeconds <= 0) {
+      clearInterval(restTimerInterval);
+      toast('⏱ Rest done — go! 💪');
+      if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
+      el.style.display = 'none';
+    }
+  }, 1000);
+}
+
+function updateRestDisplay() {
+  const el = document.getElementById('rest-timer-display');
+  if (!el) return;
+  const m = Math.floor(restTimerSeconds / 60);
+  const s = restTimerSeconds % 60;
+  el.querySelector('.rest-time').textContent = m + ':' + String(s).padStart(2, '0');
+}
+
+function stopRestTimer() {
+  clearInterval(restTimerInterval);
+  const el = document.getElementById('rest-timer-display');
+  if (el) el.style.display = 'none';
+}
+
+// Feature C: Weekly summary stats helper
+function getThisWeekRange() {
+  const now = new Date();
+  const mon = new Date(now);
+  mon.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+  mon.setHours(0, 0, 0, 0);
+  return mon;
+}
+
 // ── SERVICE WORKER ────────────────────────────────────────────
 if('serviceWorker' in navigator){
-  const sw=`const C='formd-v4';
+  const sw=`const C='formd-v6';
 self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll(['/']).then(()=>self.skipWaiting()))));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{
