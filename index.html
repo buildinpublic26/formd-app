@@ -300,8 +300,17 @@ textarea{resize:none;line-height:1.5}
     <div class="auth-form" id="login-form">
       <input type="email" id="login-email" placeholder="Email address" autocomplete="email">
       <input type="password" id="login-pw" placeholder="Password" autocomplete="current-password">
-      <button class="btn-auth" onclick="doLogin()">Log In</button>
+      <button class="btn-auth" id="login-btn" onclick="doLogin()">Log In</button>
       <p class="auth-msg" id="login-msg"></p>
+      <button onclick="showForgotPassword()" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:4px;font-family:inherit;text-decoration:underline">Forgot password?</button>
+    </div>
+    <!-- Forgot password form -->
+    <div class="auth-form" id="forgot-form" style="display:none">
+      <p style="font-size:13px;color:var(--soft);text-align:center;line-height:1.5">Enter your email and we will send you a password reset link</p>
+      <input type="email" id="forgot-email" placeholder="Email address" autocomplete="email">
+      <button class="btn-auth" onclick="doForgotPassword()">Send reset link</button>
+      <p class="auth-msg" id="forgot-msg"></p>
+      <button onclick="hideForgotPassword()" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:4px;font-family:inherit;text-decoration:underline">← Back to login</button>
     </div>
     <div class="auth-form" id="signup-form" style="display:none">
       <input type="text" id="signup-name" placeholder="Display name">
@@ -619,6 +628,20 @@ textarea{resize:none;line-height:1.5}
     </button>
   </nav>
 </div>
+  <!-- RESET PASSWORD SCREEN -->
+  <div id="reset-screen" class="screen" style="justify-content:center;align-items:center;padding:24px;background:var(--bg);overflow-y:auto">
+    <div class="auth-logo"><h1>FORMD</h1><p>Set new password</p></div>
+    <div class="auth-card">
+      <div class="auth-form">
+        <p style="font-size:13px;color:var(--soft);text-align:center;line-height:1.5">Choose a new password for your account</p>
+        <input type="password" id="reset-pw1" placeholder="New password (min 6 chars)" autocomplete="new-password">
+        <input type="password" id="reset-pw2" placeholder="Confirm new password" autocomplete="new-password">
+        <button class="btn-auth" onclick="doResetPassword()">Set new password</button>
+        <p class="auth-msg" id="reset-msg"></p>
+      </div>
+    </div>
+  </div>
+
 </div><!-- #app -->
 
 <!-- SIGN OUT CONFIRM -->
@@ -761,7 +784,7 @@ textarea{resize:none;line-height:1.5}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 // ── CONFIG ───────────────────────────────────────────────────
-const SUPABASE_URL = 'https://adwydtcnczltiwqjnnts.supabase.coL';
+const SUPABASE_URL = 'https://adwydtcnczltiwqjnnts.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3lkdGNuY3psdGl3cWpubnRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNzc0NjIsImV4cCI6MjA5Mzc1MzQ2Mn0.zDGaI9cfhLxmfZvIBFzz_q3uqum_9R5DiUixaWKZW1c';
 
 // ── HYROX STATIONS ───────────────────────────────────────────
@@ -1269,11 +1292,17 @@ async function saveSession(){
 }
 
 // ── AUTH ─────────────────────────────────────────────────────
-sb.auth.onAuthStateChange((_e,session)=>{
+sb.auth.onAuthStateChange((_e, session)=>{
+  // Handle password recovery flow
+  if(_e === 'PASSWORD_RECOVERY'){
+    showResetPasswordScreen();
+    return;
+  }
   if(session?.user){
     currentUser=session.user;
     document.getElementById('auth-screen').classList.remove('active');
     document.getElementById('main-screen').classList.add('active');
+    document.getElementById('reset-screen').classList.remove('active');
     document.getElementById('user-label').textContent=
       session.user.user_metadata?.display_name||session.user.email?.split('@')[0]||'';
     showPage('log');
@@ -1282,8 +1311,31 @@ sb.auth.onAuthStateChange((_e,session)=>{
     currentUser=null;
     document.getElementById('auth-screen').classList.add('active');
     document.getElementById('main-screen').classList.remove('active');
+    document.getElementById('reset-screen').classList.remove('active');
   }
 });
+
+function showResetPasswordScreen(){
+  document.getElementById('auth-screen').classList.remove('active');
+  document.getElementById('main-screen').classList.remove('active');
+  document.getElementById('reset-screen').classList.add('active');
+}
+
+async function doResetPassword(){
+  const pw1 = document.getElementById('reset-pw1').value;
+  const pw2 = document.getElementById('reset-pw2').value;
+  const msg  = document.getElementById('reset-msg');
+  if(!pw1 || pw1.length < 6){ msg.textContent='Password must be at least 6 characters'; msg.className='auth-msg error'; return; }
+  if(pw1 !== pw2){ msg.textContent='Passwords do not match'; msg.className='auth-msg error'; return; }
+  msg.textContent='Updating…'; msg.className='auth-msg';
+  const {error} = await sb.auth.updateUser({password: pw1});
+  if(error){
+    msg.textContent = error.message; msg.className='auth-msg error';
+  } else {
+    msg.textContent='✓ Password updated! Taking you to the app…'; msg.className='auth-msg success';
+    setTimeout(()=>{ document.getElementById('reset-screen').classList.remove('active'); }, 1500);
+  }
+}
 
 // Sync when app comes back into focus (e.g. phone unlocked)
 document.addEventListener('visibilitychange', ()=>{
@@ -1298,12 +1350,68 @@ function switchAuthTab(tab){
   document.getElementById('signup-form').style.display=tab==='signup'?'flex':'none';
 }
 async function doLogin(){
-  const email=document.getElementById('login-email').value.trim();
-  const pw=document.getElementById('login-pw').value;
-  const msg=document.getElementById('login-msg');
+  const email = document.getElementById('login-email').value.trim();
+  const pw    = document.getElementById('login-pw').value;
+  const msg   = document.getElementById('login-msg');
+  const btn   = document.getElementById('login-btn');
+
+  if(!email){ msg.textContent='Enter your email address'; msg.className='auth-msg error'; return; }
+  if(!pw)   { msg.textContent='Enter your password';     msg.className='auth-msg error'; return; }
+
   msg.textContent='Signing in…'; msg.className='auth-msg';
-  const {error}=await sb.auth.signInWithPassword({email,password:pw});
-  if(error){msg.textContent=error.message;msg.className='auth-msg error';}
+  btn.disabled=true; btn.textContent='Signing in…';
+
+  try {
+    const {data, error} = await sb.auth.signInWithPassword({email, password:pw});
+    if(error){
+      msg.textContent = error.message === 'Invalid login credentials'
+        ? 'Incorrect email or password. Check your details or use "Forgot password?" below.'
+        : error.message;
+      msg.className='auth-msg error';
+    }
+    // On success, onAuthStateChange fires automatically — no need to do anything here
+  } catch(e){
+    msg.textContent = 'Connection error — check your internet and try again.';
+    msg.className='auth-msg error';
+  } finally {
+    btn.disabled=false; btn.textContent='Log In';
+  }
+}
+
+function showForgotPassword(){
+  document.getElementById('login-form').style.display   = 'none';
+  document.getElementById('forgot-form').style.display  = 'flex';
+  document.getElementById('forgot-msg').textContent     = '';
+  // Pre-fill email if already typed
+  const email = document.getElementById('login-email').value.trim();
+  if(email) document.getElementById('forgot-email').value = email;
+}
+
+function hideForgotPassword(){
+  document.getElementById('forgot-form').style.display  = 'none';
+  document.getElementById('login-form').style.display   = 'flex';
+}
+
+async function doForgotPassword(){
+  const email = document.getElementById('forgot-email').value.trim();
+  const msg   = document.getElementById('forgot-msg');
+  if(!email){ msg.textContent='Enter your email address'; msg.className='auth-msg error'; return; }
+  msg.textContent='Sending…'; msg.className='auth-msg';
+  try {
+    const {error} = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/?reset=true'
+    });
+    if(error){
+      msg.textContent = error.message;
+      msg.className='auth-msg error';
+    } else {
+      msg.textContent = '✓ Reset link sent! Check your email inbox (and spam folder).';
+      msg.className='auth-msg success';
+    }
+  } catch(e){
+    msg.textContent='Connection error — try again.';
+    msg.className='auth-msg error';
+  }
 }
 async function doSignup(){
   const name=document.getElementById('signup-name').value.trim();
@@ -2349,36 +2457,23 @@ async function sbWrite(table, method, payload, matchCol=null, matchVal=null){
   return {data:payload, error:null};
 }
 
-// ── SERVICE WORKER (app shell cache) ─────────────────────────
-if('serviceWorker' in navigator){
-  const sw=`const C='formd-v7';
-const SHELL=['/'];
-self.addEventListener('install',e=>e.waitUntil(
-  caches.open(C).then(ca=>ca.addAll(SHELL)).then(()=>self.skipWaiting())
-));
-self.addEventListener('activate',e=>e.waitUntil(
-  caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim())
-));
-self.addEventListener('fetch',e=>{
-  if(e.request.method!=='GET') return;
-  const u=new URL(e.request.url);
-  // Never intercept API calls — let them fail naturally so offline queue kicks in
-  if(u.hostname.includes('supabase')||u.hostname.includes('anthropic')||u.pathname.includes('/functions/')) return;
-  e.respondWith(
-    fetch(e.request)
-      .then(r=>{
-        const clone=r.clone();
-        caches.open(C).then(ca=>ca.put(e.request,clone));
-        return r;
-      })
-      .catch(()=>caches.match(e.request))
-  );
-});`;
-  const blob=new Blob([sw],{type:'application/javascript'});
-  navigator.serviceWorker.register(URL.createObjectURL(blob),{scope:'/'})
-    .then(()=>{ setTimeout(updateOnlineStatus, 500); })
-    .catch(()=>{});
-}
+// ── SERVICE WORKER ───────────────────────────────────────────
+// Written as a separate file (sw.js) via the HTML — no blob URLs
+// so Cloudflare Pages CSP does not block it
+(function(){
+  if(!('serviceWorker' in navigator)) return;
+  // Try to register /sw.js — if it does not exist yet, fail silently
+  // The app works fully offline via IndexedDB regardless
+  navigator.serviceWorker.register('/sw.js', {scope:'/'})
+    .then(reg => {
+      console.log('SW registered');
+      setTimeout(updateOnlineStatus, 800);
+    })
+    .catch(() => {
+      // SW not available (blob URL blocked or file missing) — app still works
+      setTimeout(updateOnlineStatus, 800);
+    });
+})();
 </script>
 </body>
 </html>
