@@ -784,8 +784,8 @@ textarea{resize:none;line-height:1.5}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 // ── CONFIG ───────────────────────────────────────────────────
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_URL = 'https://adwydtcnczltiwqjnnts.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd3lkdGNuY3psdGl3cWpubnRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNzc0NjIsImV4cCI6MjA5Mzc1MzQ2Mn0.zDGaI9cfhLxmfZvIBFzz_q3uqum_9R5DiUixaWKZW1c';
 
 // ── HYROX STATIONS ───────────────────────────────────────────
 // Official Hyrox race format: 8 x 1km runs + 8 functional stations
@@ -1792,7 +1792,7 @@ function pickPlanEx(idx, name, type) {
   renderPlanExBuilder();
 }
 
-async async function saveDayWorkout() {
+async function saveDayWorkout() {
   const type  = document.getElementById('day-type').value;
   const valid = planExBuilder.filter(e => e.name.trim());
   const plan  = plansCache[editingPlanIndex];
