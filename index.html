@@ -622,13 +622,15 @@ textarea{resize:none;line-height:1.5}
       <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       <span>Stats</span>
     </button>
-    /*<!-- AI FEATURE — disabled for MVP
+    <!-- AI FEATURE - disabled for MVP
     <button class="nav-btn" id="nav-ai" onclick="showPage('ai')">
       <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
       <span>AI Plan</span>
     </button>
+    -->
+    </button>
   </nav>
-</div>*/
+</div>
   <!-- RESET PASSWORD SCREEN -->
   <div id="reset-screen" class="screen" style="justify-content:center;align-items:center;padding:24px;background:var(--bg);overflow-y:auto">
     <div class="auth-logo"><h1>FORMD</h1><p>Set new password</p></div>
@@ -1693,11 +1695,9 @@ const HYROX_TRAINING_TEMPLATE = [
 ];
 
 function onDayTypeChange(type) {
-  // Ask before overwriting if builder already has exercises
-  if (planExBuilder.length > 0) {
-    if (!confirm('Replace current exercises with the ' + type + ' template?')) return;
-    planExBuilder = [];
-  }
+  // Only auto-populate if the builder is currently empty
+  // — never overwrite exercises the user has already added
+  if (planExBuilder.length > 0) return;
   if (type === 'Hyrox Race Simulation') {
     planExBuilder = HYROX_RACE_TEMPLATE.map(e => ({ ...e }));
     renderPlanExBuilder();
@@ -1706,8 +1706,6 @@ function onDayTypeChange(type) {
     planExBuilder = HYROX_TRAINING_TEMPLATE.map(e => ({ ...e }));
     renderPlanExBuilder();
     toast('🔥 Hyrox training template loaded — adjust sets, distances and weights');
-  } else {
-    renderPlanExBuilder(); // re-render for non-hyrox types too
   }
 }
 
@@ -1874,17 +1872,10 @@ function loadDayIntoLog(planIndex, day) {
   const workout = plan?.days?.[day];
   if (!workout) { toast('No workout set for this day', true); return; }
   document.getElementById('session-type').value = workout.type;
-  renderHyroxBanner();
 
-  // If the day has no saved exercises, fall back to the template
-  let exercises = workout.exercises || [];
-  if (!exercises.length) {
-    if (workout.type === 'Hyrox Race Simulation') exercises = HYROX_RACE_TEMPLATE;
-    else if (workout.type === 'Hyrox Training')   exercises = HYROX_TRAINING_TEMPLATE;
-  }
   // Load exercises — expand sets from plan (each plan ex has sets/reps/weight as targets)
   // If plan has a "sets" count, create that many individual set rows pre-filled with the targets
-  currentExGroups = exercises.filter(e => e.name).map(ex => {
+  currentExGroups = workout.exercises.filter(e => e.name).map(ex => {
     const type     = ex._type || 'strength';
     const setCount = parseInt(ex.sets) || 1;
     let sets = [];
@@ -2218,8 +2209,8 @@ function selectGoal(el){
 function copyPlan(){
   navigator.clipboard.writeText(document.getElementById('ai-output').innerText).then(()=>toast('Copied!'));
 }
-
-/*async function generatePlan(){                             //AI FEATURE — disabled for MVP
+/* AI FEATURE - disabled for MVP
+async function generatePlan(){
   const btn=document.getElementById('ai-gen-btn');
   const wrap=document.getElementById('ai-out-wrap');
   const out=document.getElementById('ai-output');
@@ -2252,7 +2243,8 @@ Under 650 words. Use markdown headings.`;
       .replace(/^\-(.+)$/gm,'<li>$1</li>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
   }catch(e){ out.innerHTML=`<span style="color:var(--red)">Error: ${e.message}</span>`; }
   btn.disabled=false; btn.innerHTML='⚡ Regenerate plan';
-}*/
+}
+*/
 
 // ── HISTORY EDIT ─────────────────────────────────────────────
 let histEditSessionId = null;
@@ -2343,9 +2335,9 @@ async function saveHistEdit() {
 
 // ── SMART FEATURES ────────────────────────────────────────────
 
-// Feature A: Progressive overload suggestion                     //AI FEATURE — disabled for MVP
-// After 3+ sessions on the same exercise, suggest +2.5kg if all sets are completed
-/*async function getProgressionSuggestion(exerciseName) {
+// Feature A: Progressive overload suggestion
+// After 3+ sessions on same exercise, suggest +2.5kg if all sets completed
+async function getProgressionSuggestion(exerciseName) {
   const { data } = await sb.from('exercises').select('weight_kg, reps, sets')
     .eq('user_id', currentUser.id)
     .eq('exercise_name', exerciseName)
@@ -2357,10 +2349,10 @@ async function saveHistEdit() {
   const lastWeight = weights[0];
   const consistent = weights.slice(0, 3).every(w => w === lastWeight);
   return consistent ? (lastWeight + 2.5).toFixed(1) : null;
-}*/
+}
 
-// Show progression tip when exercise is picked                    //AI FEATURE — disabled for MVP
-/*async function showProgressionTip(name) {
+// Show progression tip when exercise is picked
+async function showProgressionTip(name) {
   const suggestion = await getProgressionSuggestion(name);
   if (!suggestion) return;
   const el = document.getElementById('progression-tip');
@@ -2368,7 +2360,7 @@ async function saveHistEdit() {
   el.textContent = '💡 Last 3 sessions at same weight — try ' + suggestion + 'kg today?';
   el.style.display = 'block';
   setTimeout(() => { if(el) el.style.display = 'none'; }, 5000);
-}*/
+}
 
 // Feature B: Rest timer
 let restTimerInterval = null;
