@@ -1683,7 +1683,7 @@ function pickPlanEx(idx, name, type) {
   renderPlanExBuilder();
 }
 
-async async function saveDayWorkout() {
+async function saveDayWorkout() {
   const type  = document.getElementById('day-type').value;
   const valid = planExBuilder.filter(e => e.name.trim());
   const plan  = plansCache[editingPlanIndex];
@@ -2170,7 +2170,7 @@ async function saveHistEdit() {
 
 // Feature A: Progressive overload suggestion
 // After 3+ sessions on same exercise, suggest +2.5kg if all sets completed
-async async function getProgressionSuggestion(exerciseName) {
+async function getProgressionSuggestion(exerciseName) {
   const { data } = await sb.from('exercises').select('weight_kg, reps, sets')
     .eq('user_id', currentUser.id)
     .eq('exercise_name', exerciseName)
@@ -2185,7 +2185,7 @@ async async function getProgressionSuggestion(exerciseName) {
 }
 
 // Show progression tip when exercise is picked
-async async function showProgressionTip(name) {
+async function showProgressionTip(name) {
   const suggestion = await getProgressionSuggestion(name);
   if (!suggestion) return;
   const el = document.getElementById('progression-tip');
