@@ -1214,23 +1214,26 @@ async function saveSession(){
   const btn=document.getElementById('save-btn');
   btn.disabled=true; btn.innerHTML='<div class="spinner"></div> Saving…';
 
-  // Generate a local UUID so we can reference it offline
+  // Local ID only used for offline queue reference
   const localId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)+Math.random().toString(36).slice(2);
-  const sessPayload = {
-    id: localId,
-    user_id:currentUser.id,
-    session_type:document.getElementById('session-type').value,
-    session_date:document.getElementById('session-date').value,
-    notes:document.getElementById('session-notes').value.trim()||null
+
+  const basePayload = {
+    user_id: currentUser.id,
+    session_type: document.getElementById('session-type').value,
+    session_date: document.getElementById('session-date').value,
+    notes: document.getElementById('session-notes').value.trim()||null
   };
 
-  let sessId = localId;
+  let sessId = localId; // fallback for offline path
+
   if(navigator.onLine){
-    const {data:sess,error:sErr}=await sb.from('workout_sessions').insert(sessPayload).select().single();
+    // Don't send id — let Supabase generate it
+    const {data:sess,error:sErr} = await sb.from('workout_sessions').insert(basePayload).select().single();
     if(sErr){toast('Error: '+sErr.message,true);btn.disabled=false;btn.innerHTML='Save workout session';return;}
-    sessId = sess.id;
+    sessId = sess.id; // use the real DB-generated UUID
   } else {
-    await queueWrite({table:'workout_sessions',method:'insert',payload:sessPayload});
+    // Offline: include localId so the queued record has a reference
+    await queueWrite({table:'workout_sessions', method:'insert', payload:{id:localId, ...basePayload}});
     toast('📥 Session queued — will sync when online');
   }
 
