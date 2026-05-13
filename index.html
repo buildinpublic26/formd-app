@@ -1692,9 +1692,11 @@ const HYROX_TRAINING_TEMPLATE = [
 ];
 
 function onDayTypeChange(type) {
-  // Only auto-populate if the builder is currently empty
-  // — never overwrite exercises the user has already added
-  if (planExBuilder.length > 0) return;
+  // Ask before overwriting if builder already has exercises
+  if (planExBuilder.length > 0) {
+    if (!confirm('Replace current exercises with the ' + type + ' template?')) return;
+    planExBuilder = [];
+  }
   if (type === 'Hyrox Race Simulation') {
     planExBuilder = HYROX_RACE_TEMPLATE.map(e => ({ ...e }));
     renderPlanExBuilder();
@@ -1703,6 +1705,8 @@ function onDayTypeChange(type) {
     planExBuilder = HYROX_TRAINING_TEMPLATE.map(e => ({ ...e }));
     renderPlanExBuilder();
     toast('🔥 Hyrox training template loaded — adjust sets, distances and weights');
+  } else {
+    renderPlanExBuilder(); // re-render for non-hyrox types too
   }
 }
 
@@ -1869,10 +1873,17 @@ function loadDayIntoLog(planIndex, day) {
   const workout = plan?.days?.[day];
   if (!workout) { toast('No workout set for this day', true); return; }
   document.getElementById('session-type').value = workout.type;
+  renderHyroxBanner();
 
+  // If the day has no saved exercises, fall back to the template
+  let exercises = workout.exercises || [];
+  if (!exercises.length) {
+    if (workout.type === 'Hyrox Race Simulation') exercises = HYROX_RACE_TEMPLATE;
+    else if (workout.type === 'Hyrox Training')   exercises = HYROX_TRAINING_TEMPLATE;
+  }
   // Load exercises — expand sets from plan (each plan ex has sets/reps/weight as targets)
   // If plan has a "sets" count, create that many individual set rows pre-filled with the targets
-  currentExGroups = workout.exercises.filter(e => e.name).map(ex => {
+  currentExGroups = exercises.filter(e => e.name).map(ex => {
     const type     = ex._type || 'strength';
     const setCount = parseInt(ex.sets) || 1;
     let sets = [];
