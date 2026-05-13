@@ -1321,7 +1321,7 @@ function showResetPasswordScreen(){
   document.getElementById('reset-screen').classList.add('active');
 }
 
-async async function doResetPassword(){
+async function doResetPassword(){
   const pw1 = document.getElementById('reset-pw1').value;
   const pw2 = document.getElementById('reset-pw2').value;
   const msg  = document.getElementById('reset-msg');
@@ -1350,7 +1350,7 @@ function switchAuthTab(tab){
   document.getElementById('signup-form').style.display=tab==='signup'?'flex':'none';
   document.getElementById('forgot-form').style.display='none';
 }
-async async function doLogin(){
+async function doLogin(){
   const email = document.getElementById('login-email').value.trim();
   const pw    = document.getElementById('login-pw').value;
   const msg   = document.getElementById('login-msg');
@@ -1393,7 +1393,7 @@ function hideForgotPassword(){
   document.getElementById('login-form').style.display   = 'flex';
 }
 
-async async function doForgotPassword(){
+async function doForgotPassword(){
   const email = document.getElementById('forgot-email').value.trim();
   const msg   = document.getElementById('forgot-msg');
   if(!email){ msg.textContent='Enter your email address'; msg.className='auth-msg error'; return; }
@@ -1414,7 +1414,7 @@ async async function doForgotPassword(){
     msg.className='auth-msg error';
   }
 }
-async async function doSignup(){
+async function doSignup(){
   const name=document.getElementById('signup-name').value.trim();
   const email=document.getElementById('signup-email').value.trim();
   const pw=document.getElementById('signup-pw').value;
@@ -1426,7 +1426,7 @@ async async function doSignup(){
   else{msg.textContent='Check your email to confirm, then log in.';msg.className='auth-msg success';}
 }
 function confirmSignOut(){ document.getElementById('signout-overlay').classList.add('show'); }
-async async function doSignOut(){
+async function doSignOut(){
   closeOverlay('signout-overlay');
   await sb.auth.signOut();
   currentExGroups=[]; currentSets=[]; addSet();
@@ -1845,7 +1845,7 @@ function pickPlanEx(idx, name, type) {
   renderPlanExBuilder();
 }
 
-async async function saveDayWorkout() {
+async function saveDayWorkout() {
   const type  = document.getElementById('day-type').value;
   const valid = planExBuilder.filter(e => e.name.trim());
   const plan  = plansCache[editingPlanIndex];
