@@ -1001,17 +1001,13 @@ async function pickExercise(name, group, isHyrox){
   await autoFillFromLastSession(name);
 }
 
-// Remembers the last time THIS exercise was logged — anywhere in the
-// account, whether it was typed manually or loaded in from a My Plan
-// day — and pre-fills the set builder with those same values so the
-// person doesn't have to retype last time's weight/reps.
-// Robust version: groups by session_id (every exercise row already
-// carries one) instead of guessing from the "sets" counter, so it
-// works correctly however the row was originally saved.
-async function autoFillFromLastSession(name) {
-  if(!currentUser || !name) return;
+// Fetches every set from the most recent session that logged this exercise
+// (raw DB rows: reps, weight_kg, weight_unit, sets, notes) or null if this
+// exercise has never been logged. Shared by the Log-tab autofill AND by
+// My Plan's "Load this" quick-load, so both pull from real history.
+async function fetchLastLoggedRows(name) {
+  if(!currentUser || !name) return null;
 
-  // 1. Find the most recent session that included this exercise
   const { data: latestRow, error: e1 } = await sb
     .from('exercises')
     .select('session_id, created_at')
@@ -1021,9 +1017,8 @@ async function autoFillFromLastSession(name) {
     .limit(1)
     .maybeSingle();
 
-  if(e1 || !latestRow) return; // never logged before — nothing to fill
+  if(e1 || !latestRow) return null; // never logged before
 
-  // 2. Pull every set from that exact session for this exercise
   const { data: setRows, error: e2 } = await sb
     .from('exercises')
     .select('reps, weight_kg, weight_unit, sets, notes')
@@ -1032,17 +1027,55 @@ async function autoFillFromLastSession(name) {
     .eq('session_id', latestRow.session_id)
     .order('sets', { ascending: true });
 
-  if(e2 || !setRows || !setRows.length) return;
+  if(e2 || !setRows || !setRows.length) return null;
+  return setRows;
+}
 
-  // Pre-fill currentSets with last session's data (set 1 first)
-  currentSets = setRows.map(row => ({
-    reps:    row.reps     || '',
-    weight:  row.weight_kg ? String(row.weight_kg) : '',
-    unit:    row.weight_unit || 'kg',
-    notes:   row.notes    || '',
-    _type:   currentMetricType
-  }));
+// Turns raw exercises-table rows (which reuse "reps" and "notes" for
+// distance/time depending on tracking type) back into the set-object
+// shape used everywhere in the log builder and My Plan quick-load.
+function parseTimeAndNotes(notesStr){
+  if(!notesStr) return { time:'', notes:'' };
+  const m = notesStr.match(/^Time:\s*([^\s·]+)\s*·?\s*(.*)$/);
+  if(m) return { time:m[1]||'', notes:(m[2]||'').trim() };
+  return { time:'', notes:notesStr };
+}
+function parseDistanceValue(repsStr){
+  if(!repsStr) return { value:'', unit:'m' };
+  const m = String(repsStr).match(/^([\d.]+)\s*(m|km|mi)?$/i);
+  if(m) return { value:m[1], unit:(m[2]||'m').toLowerCase() };
+  return { value:repsStr, unit:'m' };
+}
+function dbRowsToSets(rows, type){
+  return rows.map(row => {
+    if(type === 'cardio'){
+      const { value, unit } = parseDistanceValue(row.reps);
+      const { time, notes } = parseTimeAndNotes(row.notes);
+      return { distance:value, distUnit:unit, time, notes, _type:'cardio' };
+    } else if(type === 'hyrox'){
+      const { time, notes } = parseTimeAndNotes(row.notes);
+      return { distance:row.reps||'', weight: row.weight_kg?String(row.weight_kg):'', time, notes, _type:'hyrox' };
+    } else {
+      return {
+        reps:   row.reps || '',
+        weight: row.weight_kg ? String(row.weight_kg) : '',
+        unit:   row.weight_unit || 'kg',
+        notes:  row.notes || '',
+        _type:  'strength'
+      };
+    }
+  });
+}
 
+// Remembers the last time THIS exercise was logged — anywhere in the
+// account, whether it was typed manually or loaded in from a My Plan
+// day — and pre-fills the set builder with those same values so the
+// person doesn't have to retype last time's weight/reps.
+async function autoFillFromLastSession(name) {
+  const setRows = await fetchLastLoggedRows(name);
+  if(!setRows) return;
+
+  currentSets = dbRowsToSets(setRows, currentMetricType);
   renderSets();
 
   // Show tip
@@ -1998,7 +2031,7 @@ async function addExerciseToPlanDay(name, metricType, sets){
   }
 }
 
-function loadDayIntoLog(planIndex, day) {
+async function loadDayIntoLog(planIndex, day) {
   const plan    = plansCache[planIndex];
   const workout = plan?.days?.[day];
   if (!workout) { toast('No workout set for this day', true); return; }
@@ -2007,10 +2040,23 @@ function loadDayIntoLog(planIndex, day) {
   activePlanContext = { planIndex, day, planId: plan._id };
   showAddToPlanToggle(day);
 
-  // Load exercises — expand sets from plan (each plan ex has sets/reps/weight as targets)
-  // If plan has a "sets" count, create that many individual set rows pre-filled with the targets
-  currentExGroups = workout.exercises.filter(e => e.name).map(ex => {
-    const type     = ex._type || 'strength';
+  // For each exercise in the plan day, check whether it's actually been
+  // logged before — if so, pull the real last-session weights/reps/times
+  // instead of the plan's static preset. Only exercises never logged
+  // before fall back to the plan's saved target numbers.
+  let usedHistoryCount = 0;
+  const namedExercises = workout.exercises.filter(e => e.name);
+
+  currentExGroups = await Promise.all(namedExercises.map(async ex => {
+    const type = ex._type || 'strength';
+    const historyRows = await fetchLastLoggedRows(ex.name);
+
+    if(historyRows){
+      usedHistoryCount++;
+      return { name: ex.name, _type: type, sets: dbRowsToSets(historyRows, type) };
+    }
+
+    // Never logged before — expand from the plan's preset targets instead
     const setCount = parseInt(ex.sets) || 1;
     let sets = [];
     for(let i = 0; i < setCount; i++){
@@ -2019,14 +2065,20 @@ function loadDayIntoLog(planIndex, day) {
       } else if(type === 'hyrox'){
         sets.push({ distance: ex.distance||'', weight: ex.weight||'', time: ex.time||'', notes: ex.notes||'', _type: 'hyrox' });
       } else {
-        // Include weight and unit from plan preset — user can modify before saving
         sets.push({ reps: ex.reps||'', weight: ex.weight||'', unit: ex.unit||'kg', notes: ex.notes||'', _type: 'strength' });
       }
     }
     return { name: ex.name, _type: type, sets };
-  });
-  // Show a tip that weights are editable
-  setTimeout(()=>toast('✏️ Weights pre-filled from plan — edit any field before saving'), 400);
+  }));
+
+  // Tip reflects what actually happened
+  setTimeout(()=>{
+    if(usedHistoryCount > 0){
+      toast(`📋 ${usedHistoryCount}/${namedExercises.length} exercises pre-filled from your last session — edit before saving`);
+    } else {
+      toast('✏️ Weights pre-filled from plan — edit any field before saving');
+    }
+  }, 400);
 
   renderCurrentExercises();
   renderHyroxBanner();
