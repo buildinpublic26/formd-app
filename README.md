@@ -1,6 +1,6 @@
 # Formd — AI Gym Tracker
 
-Formd is a workout tracker built for lifters and Hyrox athletes. Log sessions, build training programmes, track body metrics, and record milestones — all synced to your account via Supabase, with full offline support. This README is a complete tour of what the app can do today.
+Formd is a workout tracker built for lifters, exercise ethusiasts and Hyrox athletes. Log sessions, build training programmes, track body metrics, and record milestones — all synced to your account via Supabase, with full offline support. This README is a complete tour of what the app can do today.
 
 ---
 
