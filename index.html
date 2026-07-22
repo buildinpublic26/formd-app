@@ -391,7 +391,7 @@ textarea{resize:none;line-height:1.5}
             <label class="form-label">Exercise name</label>
             <div class="ac-wrap">
               <input type="text" id="ex-name" placeholder="Type to search or enter custom…" autocomplete="off"
-                oninput="onExInput(this.value)" onfocus="onExInput(this.value)">
+                oninput="onExInput(this.value)" onfocus="onExInput(this.value)" onblur="onExNameBlur(this.value)">
               <div class="ac-list" id="ac-list"></div>
             </div>
           </div>
@@ -421,6 +421,12 @@ textarea{resize:none;line-height:1.5}
 
           <!-- Progression tip -->
           <div id="progression-tip" style="display:none;font-size:12px;color:var(--teal);background:var(--teal-dim);border-radius:6px;padding:7px 10px;margin-top:2px"></div>
+
+          <!-- Also-add-to-My-Plan toggle (only shown when today's session was loaded from a My Plan day) -->
+          <label id="add-to-plan-row" style="display:none;align-items:center;gap:8px;font-size:12px;color:var(--soft);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 10px;cursor:pointer">
+            <input type="checkbox" id="add-to-plan-check" style="width:auto;accent-color:var(--purple)">
+            <span id="add-to-plan-label">Also add this exercise to My Plan</span>
+          </label>
 
           <button class="btn btn-outline" onclick="addExercise()">
             <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" fill="none" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
@@ -883,6 +889,41 @@ let currentExGroups=[], currentSets=[];
 let currentMetricType='strength'; // 'strength' | 'cardio' | 'hyrox'
 let planDaysSelected=[], planExBuilder=[], editingPlanId=null, editingPlanIndex=null, editingDayKey=null;
 
+// ── CUSTOM EXERCISES (user's own exercise names) ──────────────
+// Stored in Supabase `custom_exercises` table so a user's own naming
+// for an exercise ("Church Press" instead of "Overhead Press", etc.)
+// shows up in autocomplete everywhere, on any device.
+let customExDB = []; // [{n, g, h}]
+
+function allExDB(){ return EX_DB.concat(customExDB); }
+
+function findExInDB(name){
+  if(!name) return null;
+  const q = name.trim().toLowerCase();
+  return allExDB().find(e => e.n.toLowerCase() === q) || null;
+}
+
+async function loadCustomExercises(){
+  if(!currentUser) return;
+  const { data, error } = await sb.from('custom_exercises').select('name, group_tag, is_hyrox').eq('user_id', currentUser.id);
+  if(error){ console.warn('loadCustomExercises:', error.message); return; }
+  customExDB = (data||[]).map(r => ({ n:r.name, g:r.group_tag||'Custom', h:!!r.is_hyrox }));
+}
+
+// Called whenever an exercise is actually added/saved with a name that
+// isn't already recognised — remembers it for next time, on this account.
+async function saveCustomExerciseIfNew(name, metricType){
+  if(!currentUser || !name) return;
+  if(findExInDB(name)) return; // already known — nothing to do
+  const entry = { n:name, g: metricType==='hyrox'?'Hyrox':metricType==='cardio'?'Cardio':'Custom', h: metricType==='hyrox' };
+  customExDB.push(entry); // available immediately in this session
+  try{
+    await sb.from('custom_exercises').insert({
+      user_id: currentUser.id, name, group_tag: entry.g, is_hyrox: entry.h
+    });
+  } catch(e){ console.warn('saveCustomExerciseIfNew:', e.message); }
+}
+
 function today(){ return new Date().toISOString().split('T')[0]; }
 document.getElementById('session-date').value=today();
 document.getElementById('metric-date').value=today();
@@ -931,7 +972,7 @@ function onExInput(val){
   const list=document.getElementById('ac-list');
   if(!val){list.classList.remove('show');return;}
   const q=val.toLowerCase();
-  const matches=EX_DB.filter(e=>e.n.toLowerCase().includes(q)).slice(0,10);
+  const matches=allExDB().filter(e=>e.n.toLowerCase().includes(q)).slice(0,10);
   if(!matches.length){list.classList.remove('show');return;}
   list.innerHTML=matches.map(e=>`
     <div class="ac-item" onclick="pickExercise('${e.n.replace(/'/g,"\\'")}','${e.g}','${e.h?'hyrox':''}')">
@@ -956,41 +997,44 @@ async function pickExercise(name, group, isHyrox){
     showProgressionTip(name);
   }
   // Auto-fill sets from last session
+  lastAutoFillName = name;
   await autoFillFromLastSession(name);
 }
 
+// Remembers the last time THIS exercise was logged — anywhere in the
+// account, whether it was typed manually or loaded in from a My Plan
+// day — and pre-fills the set builder with those same values so the
+// person doesn't have to retype last time's weight/reps.
+// Robust version: groups by session_id (every exercise row already
+// carries one) instead of guessing from the "sets" counter, so it
+// works correctly however the row was originally saved.
 async function autoFillFromLastSession(name) {
-  if(!currentUser) return;
-  // Fetch the last logged sets for this exercise
-  const { data } = await sb
+  if(!currentUser || !name) return;
+
+  // 1. Find the most recent session that included this exercise
+  const { data: latestRow, error: e1 } = await sb
+    .from('exercises')
+    .select('session_id, created_at')
+    .eq('user_id', currentUser.id)
+    .eq('exercise_name', name)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if(e1 || !latestRow) return; // never logged before — nothing to fill
+
+  // 2. Pull every set from that exact session for this exercise
+  const { data: setRows, error: e2 } = await sb
     .from('exercises')
     .select('reps, weight_kg, weight_unit, sets, notes')
     .eq('user_id', currentUser.id)
     .eq('exercise_name', name)
-    .order('created_at', { ascending: false })
-    .limit(10);
+    .eq('session_id', latestRow.session_id)
+    .order('sets', { ascending: true });
 
-  if(!data || !data.length) return;
+  if(e2 || !setRows || !setRows.length) return;
 
-  // Group by sets number to reconstruct last session's set rows
-  const lastSets = [...data].reverse(); // oldest first within the limit
-  // Find the most recent contiguous block (same exercise in one session)
-  // Heuristic: take rows where sets = 1,2,3... in sequence from the most recent
-  const recent = data; // already newest-first
-  // Group: take while sets is increasing from 1
-  const setRows = [];
-  for(const row of recent){
-    if(row.sets === setRows.length + 1) setRows.push(row);
-    else if(row.sets === 1 && setRows.length > 0) break; // new session found
-    else if(row.sets === 1) setRows.push(row);
-    if(setRows.length >= 10) break;
-  }
-  if(!setRows.length) return;
-
-  // Reverse to chronological order (set 1 first)
-  setRows.reverse();
-
-  // Pre-fill currentSets with last session's data
+  // Pre-fill currentSets with last session's data (set 1 first)
   currentSets = setRows.map(row => ({
     reps:    row.reps     || '',
     weight:  row.weight_kg ? String(row.weight_kg) : '',
@@ -1011,6 +1055,18 @@ async function autoFillFromLastSession(name) {
     setTimeout(()=>{ if(tip) tip.style.display='none'; }, 6000);
   }
 }
+
+// Fires when the exercise name field loses focus — covers the case
+// where someone typed a custom/previously-used name instead of
+// picking from the autocomplete dropdown, so the recall still works.
+let lastAutoFillName = '';
+async function onExNameBlur(val){
+  const name = (val||'').trim();
+  if(!name || name.toLowerCase() === lastAutoFillName.toLowerCase()) return;
+  lastAutoFillName = name;
+  await autoFillFromLastSession(name);
+}
+
 function hideAC(){ document.getElementById('ac-list').classList.remove('show'); }
 document.addEventListener('click',e=>{ if(!e.target.closest('.ac-wrap')) hideAC(); });
 
@@ -1108,6 +1164,16 @@ function addExercise(){
 
   if(existing){ existing.sets.push(...newSets); toast(`Added to ${name}`); }
   else { currentExGroups.push({name, sets:newSets, _type:metricType}); toast(`${name} added`); }
+
+  // If this exercise name isn't already recognised (built-in or previously
+  // saved custom name), remember it now so it autocompletes next time
+  if(!findExInDB(name)) saveCustomExerciseIfNew(name, metricType);
+
+  // Optionally also add this exercise into the My Plan day it was loaded from
+  if(activePlanContext && document.getElementById('add-to-plan-check')?.checked){
+    addExerciseToPlanDay(name, metricType, newSets);
+    document.getElementById('add-to-plan-check').checked = false;
+  }
 
   document.getElementById('ex-name').value='';
   currentSets=[]; addSet();
@@ -1291,6 +1357,8 @@ async function saveSession(){
   document.getElementById('session-notes').value='';
   document.getElementById('session-date').value=today();
   btn.disabled=false; btn.innerHTML='Save workout session'; btn.style.display='none';
+  activePlanContext = null;
+  hideAddToPlanToggle();
   toast('Session saved! 💪');
 }
 
@@ -1309,6 +1377,7 @@ sb.auth.onAuthStateChange((_e, session)=>{
     document.getElementById('user-label').textContent=
       session.user.user_metadata?.display_name||session.user.email?.split('@')[0]||'';
     showPage('log');
+    loadCustomExercises();
     setTimeout(()=>{ updateOnlineStatus(); syncPendingWrites(); }, 1000);
   } else {
     currentUser=null;
@@ -1432,7 +1501,7 @@ function confirmSignOut(){ document.getElementById('signout-overlay').classList.
 async function doSignOut(){
   closeOverlay('signout-overlay');
   await sb.auth.signOut();
-  currentExGroups=[]; currentSets=[]; addSet();
+  currentExGroups=[]; currentSets=[]; addSet(); customExDB=[]; activePlanContext=null;
   toast('Signed out');
 }
 
@@ -1464,6 +1533,25 @@ document.querySelectorAll('.overlay').forEach(ov=>{
 // Plans stored in Supabase `training_programs` table — syncs across all devices
 
 let plansCache = [];
+
+// Tracks which My Plan day (if any) today's log session was loaded from,
+// so extra exercises added during logging can optionally be pushed back
+// into that plan day before the workout is saved.
+let activePlanContext = null; // { planIndex, day, planId }
+
+function showAddToPlanToggle(day){
+  const row = document.getElementById('add-to-plan-row');
+  const lbl = document.getElementById('add-to-plan-label');
+  const chk = document.getElementById('add-to-plan-check');
+  if(!row) return;
+  lbl.textContent = `Also add this exercise to My Plan: ${day}`;
+  chk.checked = false;
+  row.style.display = 'flex';
+}
+function hideAddToPlanToggle(){
+  const row = document.getElementById('add-to-plan-row');
+  if(row) row.style.display = 'none';
+}
 
 async function getPlans() {
   if (!currentUser) return [];
@@ -1554,7 +1642,7 @@ async function loadMyPlan() {
           </div>
           <div class="plan-day-body" id="pd-${pi}-${day}">
             ${w && w.exercises.length ? w.exercises.map(ex => {
-              const isH = ex._type === 'hyrox' || EX_DB.find(e => e.n === ex.name)?.h;
+              const isH = ex._type === 'hyrox' || allExDB().find(e => e.n === ex.name)?.h;
               return `<div class="plan-ex-row">
                 <div>
                   <div class="plan-ex-name">${ex.name}${isH ? '<span class="badge-hyrox" style="font-size:9px;padding:1px 5px">HYROX</span>' : ''}</div>
@@ -1832,7 +1920,7 @@ function filterPlanAC(input, idx) {
   const list = document.getElementById('pac-' + idx);
   if (!val) { list.classList.remove('show'); return; }
   const q       = val.toLowerCase();
-  const matches = EX_DB.filter(e => e.n.toLowerCase().includes(q)).slice(0, 7);
+  const matches = allExDB().filter(e => e.n.toLowerCase().includes(q)).slice(0, 7);
   if (!matches.length) { list.classList.remove('show'); return; }
   list.innerHTML = matches.map(e => `
     <div class="ac-item" onclick="pickPlanEx(${idx},'${e.n.replace(/'/g,"\'")}','${e.h?'hyrox':e.g==='Cardio'?'cardio':'strength'}')">
@@ -1854,6 +1942,9 @@ async function saveDayWorkout() {
   const plan  = plansCache[editingPlanIndex];
   if (!plan) return;
 
+  // Remember any custom exercise names used here too
+  valid.forEach(ex => { if(!findExInDB(ex.name)) saveCustomExerciseIfNew(ex.name, ex._type||'strength'); });
+
   const updatedDays = { ...plan.days };
   updatedDays[editingDayKey] = { type, exercises: valid };
 
@@ -1867,11 +1958,54 @@ async function saveDayWorkout() {
   }
 }
 
+// Appends an exercise the user added while logging today's session into
+// the My Plan day it was originally loaded from — so next time that day
+// comes around, the extra exercise is already part of the plan.
+// Purely additive: never removes or reorders anything already in the plan.
+async function addExerciseToPlanDay(name, metricType, sets){
+  if(!activePlanContext) return;
+  const { planIndex, day, planId } = activePlanContext;
+  const plan = plansCache[planIndex];
+  if(!plan) return;
+
+  const existingDay = plan.days?.[day] || { type: document.getElementById('session-type').value, exercises: [] };
+  const already = existingDay.exercises.find(e => e.name.toLowerCase() === name.toLowerCase());
+  if(already){ toast(`${name} is already in this My Plan day`); return; }
+
+  const first = sets[0] || {};
+  const planEx = {
+    name,
+    _type: metricType,
+    sets: String(sets.length || 1),
+    reps: first.reps || '',
+    distance: first.distance || '',
+    weight: first.weight || '',
+    time: first.time || '',
+    unit: first.unit || 'kg',
+    notes: first.notes || ''
+  };
+
+  const updatedExercises = [...existingDay.exercises, planEx];
+  const updatedDays = { ...plan.days, [day]: { ...existingDay, exercises: updatedExercises } };
+
+  try{
+    await updatePlanInDB(planId, { days: updatedDays });
+    // Keep the local cache in sync so the change is reflected immediately
+    plan.days = updatedDays;
+    toast(`✓ Added "${name}" to My Plan — ${day}`);
+  } catch(e){
+    toast('Could not update My Plan: ' + e.message, true);
+  }
+}
+
 function loadDayIntoLog(planIndex, day) {
   const plan    = plansCache[planIndex];
   const workout = plan?.days?.[day];
   if (!workout) { toast('No workout set for this day', true); return; }
   document.getElementById('session-type').value = workout.type;
+
+  activePlanContext = { planIndex, day, planId: plan._id };
+  showAddToPlanToggle(day);
 
   // Load exercises — expand sets from plan (each plan ex has sets/reps/weight as targets)
   // If plan has a "sets" count, create that many individual set rows pre-filled with the targets
@@ -1995,13 +2129,13 @@ async function loadHistory(){
     const gKeys=Object.keys(groups);
     const isHyroxSess=s.session_type?.toLowerCase().includes('hyrox');
     const chips=gKeys.slice(0,5).map(n=>{
-      const isH=EX_DB.find(e=>e.n===n)?.h;
+      const isH=allExDB().find(e=>e.n===n)?.h;
       return `<span class="chip${isH?' hyrox-chip':''}">${n}</span>`;
     }).join('');
     const moreChips=gKeys.length>5?`<span class="chip">+${gKeys.length-5} more</span>`:'';
     const detail=gKeys.map(name=>{
       const sets=groups[name];
-      const isH=EX_DB.find(e=>e.n===name)?.h;
+      const isH=allExDB().find(e=>e.n===name)?.h;
       return `<div class="hist-ex-group">
         <div class="hist-ex-name">${name}${isH?'<span class="badge-hyrox" style="font-size:9px;padding:1px 5px">HYROX</span>':''}</div>
         ${sets.map((st,i)=>{
@@ -2177,7 +2311,7 @@ async function loadStats(){
     document.getElementById('freq-card').style.display='block';
     const mx=freqEntries[0][1];
     document.getElementById('freq-list').innerHTML=freqEntries.map(([n,c])=>{
-      const isH=EX_DB.find(e=>e.n===n)?.h;
+      const isH=allExDB().find(e=>e.n===n)?.h;
       return `<div class="freq-bar-wrap">
         <div class="freq-bar-label">
           <span style="color:var(--soft)">${n}${isH?' 🔥':''}</span>
@@ -2247,7 +2381,7 @@ function renderHistEditExercises() {
   });
   el.innerHTML = Object.keys(groups).map(name => {
     const sets = groups[name];
-    const isH  = EX_DB.find(e => e.n === name)?.h;
+    const isH  = allExDB().find(e => e.n === name)?.h;
     return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden">
       <div style="background:var(--card);padding:8px 12px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px">
         ${name} ${isH ? '<span class="badge-hyrox" style="font-size:9px">HYROX</span>' : ''}
